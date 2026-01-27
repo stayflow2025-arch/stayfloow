@@ -4,3 +4,5 @@ runConfig:
   concurrency: 80
   cpu: 1
   memoryMiB: 512
+appHosting:
+  outputDirectory: "."
