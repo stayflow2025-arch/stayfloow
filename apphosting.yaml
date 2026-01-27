@@ -1,8 +1,3 @@
-kind: "AppStack"
-customerSettings: []
-runConfig:
-  concurrency: 80
-  cpu: 1
-  memoryMiB: 512
-appHosting:
-  outputDirectory: "."
+# Configuration minimaliste pour éviter les erreurs de build
+kind: "apphosting"
+schemaVersion: "v1"
