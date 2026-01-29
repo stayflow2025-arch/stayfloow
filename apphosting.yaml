@@ -1,3 +1,6 @@
-# Configuration minimaliste pour éviter les erreurs de build
-kind: "apphosting"
-schemaVersion: "v1"
+# Configuration minimale pour Next.js sur Firebase App Hosting
+run:
+  build:
+    command: npm run build  # ou yarn build si tu gardes yarn, mais npm est recommandé
+  serve:
+    runtime: nodejs20       # correspond à ton "engines": {"node": "20.x"} dans package.json
