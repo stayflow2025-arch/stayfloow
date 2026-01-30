@@ -5,9 +5,8 @@ runConfig:
   maxInstances: 1
 
 run:
-  # On ajoute --no-package-lock pour dire à Firebase : 
-  # "Ne cherche pas de fichier lock, crée tout maintenant"
-  command: npm install --legacy-peer-deps --no-package-lock && npm run build
+  # Le --force va écraser le petit lockfile pour installer tout le projet proprement
+  command: npm install --legacy-peer-deps --force && npm run build
   serve:
     runtime: nodejs20
 
