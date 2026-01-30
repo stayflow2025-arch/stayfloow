@@ -1,5 +1,5 @@
 run:
   build:
-    command: npm run build
+    command: rm -f package-lock.json && npm install --legacy-peer-deps && npm run build
   serve:
     runtime: nodejs20
