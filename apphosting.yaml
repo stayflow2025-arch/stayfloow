@@ -1,7 +1,10 @@
-# Settings to manage and configure a Firebase App Hosting backend.
-# https://firebase.google.com/docs/app-hosting/configure
+kind: 'AppHostingYaml'
+version: 'v1'
 
 runConfig:
-  # Increase this value if you'd like to automatically spin up
-  # more instances in response to increased traffic.
   maxInstances: 1
+
+setupConfig:
+  installConfig:
+    # Cette commande ignore les erreurs de versions et répare ton projet
+    command: npm install --legacy-peer-deps --force
