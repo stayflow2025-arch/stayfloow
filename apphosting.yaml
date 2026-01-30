@@ -1,5 +1,10 @@
-run:
-  build:
-    command: npm install --legacy-peer-deps --force && npm run build
-  serve:
-    runtime: nodejs20
+kind: AppHostingYaml
+version: v1
+
+runConfig:
+  maxInstances: 1
+
+setupConfig:
+  installConfig:
+    # Cette ligne est ta solution : elle ignore les erreurs de fichiers et force le build
+    command: npm install --legacy-peer-deps && npm install @paypal/react-paypal-js@8.5.0
