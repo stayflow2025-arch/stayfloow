@@ -1,7 +1,5 @@
-kind: 'AppHostingYaml'
-version: 'v1'
-
-setupConfig:
-  installConfig:
-    # Cette ligne crée un lock file vide pour tromper la sécurité de Firebase
-    command: touch package-lock.json && npm install --legacy-peer-deps
+run:
+  build:
+    command: npm run build
+  serve:
+    runtime: nodejs20
