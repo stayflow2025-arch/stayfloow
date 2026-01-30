@@ -3,6 +3,10 @@ runConfig:
 
 run:
   build:
-    command: npm install && npm run build
+    command: npm install --package-lock-only && npm install && npm run build
   serve:
     runtime: nodejs20
+
+env:
+  - variable: NPM_CONFIG_LEGACY_PEER_DEPS
+    value: "true"
