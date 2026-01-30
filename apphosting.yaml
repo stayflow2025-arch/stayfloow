@@ -4,17 +4,7 @@ version: 'v1'
 runConfig:
   maxInstances: 1
 
-# On définit explicitement la commande d'installation pour court-circuiter "npm ci"
 setupConfig:
   installConfig:
-    command: npm install --legacy-peer-deps
-
-run:
-  # On s'assure que le build se lance après l'install
-  command: npm run build
-  serve:
-    runtime: nodejs20
-
-env:
-  - variable: NPM_CONFIG_LEGACY_PEER_DEPS
-    value: "true"
+    # C'EST ICI que la commande doit être pour corriger l'erreur de lockfile
+    command: npm install --legacy-peer-deps --force
