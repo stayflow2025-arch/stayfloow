@@ -4,17 +4,17 @@ version: 'v1'
 runConfig:
   maxInstances: 1
 
+# On définit explicitement la commande d'installation pour court-circuiter "npm ci"
+setupConfig:
+  installConfig:
+    command: npm install --legacy-peer-deps
+
 run:
-  # On force l'installation propre sans tenir compte du fichier lock
-  command: npm install --legacy-peer-deps && npm run build
+  # On s'assure que le build se lance après l'install
+  command: npm run build
   serve:
     runtime: nodejs20
 
 env:
-  # Cette variable dit à npm : "Installe quoi qu'il arrive"
-  - variable: NPM_CONFIG_FUND
-    value: "false"
-  - variable: NPM_CONFIG_AUDIT
-    value: "false"
   - variable: NPM_CONFIG_LEGACY_PEER_DEPS
     value: "true"
