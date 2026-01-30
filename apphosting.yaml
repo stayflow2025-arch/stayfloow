@@ -5,11 +5,16 @@ runConfig:
   maxInstances: 1
 
 run:
-  # Le --force va écraser le petit lockfile pour installer tout le projet proprement
-  command: npm install --legacy-peer-deps --force && npm run build
+  # On force l'installation propre sans tenir compte du fichier lock
+  command: npm install --legacy-peer-deps && npm run build
   serve:
     runtime: nodejs20
 
 env:
+  # Cette variable dit à npm : "Installe quoi qu'il arrive"
+  - variable: NPM_CONFIG_FUND
+    value: "false"
+  - variable: NPM_CONFIG_AUDIT
+    value: "false"
   - variable: NPM_CONFIG_LEGACY_PEER_DEPS
     value: "true"
