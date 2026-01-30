@@ -6,5 +6,5 @@ runConfig:
 
 setupConfig:
   installConfig:
-    # C'EST ICI que la commande doit être pour corriger l'erreur de lockfile
-    command: npm install --legacy-peer-deps --force
+    # C'est ici que l'on force l'installation propre
+    command: npm install --legacy-peer-deps
