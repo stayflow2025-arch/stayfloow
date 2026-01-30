@@ -1,10 +1,5 @@
-kind: 'AppHostingYaml'
-version: 'v1'
-
-runConfig:
-  maxInstances: 1
-
-setupConfig:
-  installConfig:
-    # Cette commande ignore les erreurs de versions et répare ton projet
-    command: npm install --legacy-peer-deps --force
+run:
+  build:
+    command: npm install --legacy-peer-deps --force && npm run build
+  serve:
+    runtime: nodejs20
