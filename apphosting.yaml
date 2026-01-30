@@ -5,8 +5,8 @@ runConfig:
   maxInstances: 1
 
 run:
-  # On garde la commande d'installation explicite
-  command: npm ci --legacy-peer-deps && npm run build
+  # On force npm install car ton projet a besoin de recalculer les liens
+  command: npm install --legacy-peer-deps && npm run build
   serve:
     runtime: nodejs20
 
