@@ -5,9 +5,8 @@ runConfig:
   maxInstances: 1
 
 run:
-  # On force npm install qui va reconstruire un environnement propre
-  # Le flag --legacy-peer-deps est vital ici vu tes erreurs de dépendances
-  command: npm install --legacy-peer-deps && npm run build
+  # On garde la commande d'installation explicite
+  command: npm ci --legacy-peer-deps && npm run build
   serve:
     runtime: nodejs20
 
