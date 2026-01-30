@@ -6,5 +6,5 @@ runConfig:
 
 setupConfig:
   installConfig:
-    # C'est ici que l'on force l'installation propre
-    command: npm install --legacy-peer-deps
+    # On force npm install (plus souple) au lieu de npm ci (trop strict)
+    command: npm install --legacy-peer-deps --force
