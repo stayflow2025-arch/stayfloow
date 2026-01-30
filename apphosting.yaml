@@ -6,5 +6,5 @@ runConfig:
 
 setupConfig:
   installConfig:
-    # Use legacy-peer-deps to ignore minor version mismatches
+    # Forces 'npm install' to bypass strict lockfile synchronization errors
     command: npm install --legacy-peer-deps
