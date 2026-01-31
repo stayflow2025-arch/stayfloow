@@ -1,5 +1,3 @@
-// src/ai/flows/tailor-recommendations-via-ui.ts
-
 export async function tailorRecommendationsViaUI({
   userPreferences,
   recommendationToolEnabled,
@@ -11,7 +9,6 @@ export async function tailorRecommendationsViaUI({
   pastBookings: string;
   travelerProfiles: string;
 }) {
-  // Simulation d’un traitement IA
   await new Promise((resolve) => setTimeout(resolve, 1200));
 
   if (!recommendationToolEnabled) {
@@ -21,7 +18,6 @@ export async function tailorRecommendationsViaUI({
     };
   }
 
-  // Génération simple de recommandations
   const generatedText = `
 Préférences détectées : ${userPreferences}
 
