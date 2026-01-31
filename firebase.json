@@ -1,17 +1,14 @@
-cat > package.json << 'EOF'
+cat > firebase.json << 'EOF'
 {
-  "name": "stayfloow",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build && rm -rf .firebase && mkdir -p .firebase && cp -r .next/static .firebase/ && cp -r public .firebase/ && cp .next/server/app/index.html .firebase/index.html",
-    "start": "next start"
-  },
-  "dependencies": {
-    "next": "14.2.5",
-    "react": "18.2.0",
-    "react-dom": "18.2.0"
+  "hosting": {
+    "public": ".firebase",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
   }
 }
 EOF
