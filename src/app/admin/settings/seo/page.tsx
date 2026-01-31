@@ -1,73 +1,137 @@
-{
-  "name": "stayflow",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev -p 9002",
-    "genkit:dev": "genkit start -- tsx src/ai/dev.ts",
-    "genkit:watch": "genkit start -- tsx --watch src/ai/dev.ts",
-    "build": "next build",
-    "gcp-build": "npm install && next build",
-    "start": "next start",
-    "lint": "next lint",
-    "typecheck": "tsc --noEmit"
-  },
-  "dependencies": {
-    "@genkit-ai/google-genai": "^1.28.0",
-    "@genkit-ai/next": "^1.28.0",
-    "@hookform/resolvers": "^4.1.3",
-    "@icons-pack/react-simple-icons": "^9.6.0",
-    "@paypal/react-paypal-js": "^8.5.0",
-    "@radix-ui/react-accordion": "^1.2.3",
-    "@radix-ui/react-alert-dialog": "^1.1.6",
-    "@radix-ui/react-avatar": "^1.1.3",
-    "@radix-ui/react-checkbox": "^1.1.4",
-    "@radix-ui/react-collapsible": "^1.1.11",
-    "@radix-ui/react-dialog": "^1.1.6",
-    "@radix-ui/react-dropdown-menu": "^2.1.6",
-    "@radix-ui/react-label": "^2.1.2",
-    "@radix-ui/react-menubar": "^1.1.6",
-    "@radix-ui/react-popover": "^1.1.6",
-    "@radix-ui/react-progress": "^1.1.2",
-    "@radix-ui/react-radio-group": "^1.2.3",
-    "@radix-ui/react-scroll-area": "^1.2.3",
-    "@radix-ui/react-select": "^2.1.6",
-    "@radix-ui/react-separator": "^1.1.2",
-    "@radix-ui/react-slider": "^1.2.3",
-    "@radix-ui/react-slot": "^1.2.3",
-    "@radix-ui/react-switch": "^1.1.3",
-    "@radix-ui/react-tabs": "^1.1.3",
-    "@radix-ui/react-toast": "^1.2.6",
-    "@radix-ui/react-tooltip": "^1.1.8",
-    "class-variance-authority": "^0.7.1",
-    "clsx": "^2.1.1",
-    "date-fns": "^3.6.0",
-    "dotenv": "^16.5.0",
-    "embla-carousel-react": "^8.6.0",
-    "firebase": "^11.9.1",
-    "genkit": "1.11.0",
-    "lucide-react": "^0.475.0",
-    "next": "14.2.3",
-    "react": "^18.3.1",
-    "react-day-picker": "^8.10.1",
-    "react-dom": "^18.3.1",
-    "react-hook-form": "^7.54.2",
-    "recharts": "^2.15.1",
-    "resend": "^3.5.0",
-    "tailwind-merge": "^3.0.1",
-    "tailwindcss-animate": "^1.0.7",
-    "zod": "^3.24.2"
-  },
-  "devDependencies": {
-    "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
-    "genkit-cli": "1.11.0",
-    "postcss": "^8",
-    "tailwindcss": "^3.4.1",
-    "typescript": "^5"
-  },
-  "engines": {
-    "node": "20.x"
-  }
+
+"use client";
+import React, { useState } from "react";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Loader2, Search, Wand2, Lightbulb, FileText, Key, Dot } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+
+export default function SeoOptimizerPage() {
+  const [isPending, setIsPending] = useState(false);
+  const [result, setResult] = useState<any | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const [pageType, setPageType] = useState('homepage');
+  const [countryFocus, setCountryFocus] = useState('Both');
+  const [entityName, setEntityName] = useState('');
+
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+    setError("La fonctionnalité d'optimisation IA est temporairement désactivée pour maintenance.");
+    setResult(null);
+  };
+
+  return (
+    <div className="p-4 sm:p-6 lg:p-8 space-y-8">
+       <div className="mb-6">
+            <h1 className="text-3xl font-headline font-bold flex items-center gap-3">
+                <Search className="h-8 w-8 text-primary" />
+                Optimiseur de Mots-Clés SEO
+            </h1>
+            <p className="text-muted-foreground mt-2">Utilisez l'IA pour générer des titres, des descriptions et des mots-clés optimisés afin d'améliorer votre classement sur les moteurs de recherche.</p>
+        </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Paramètres de l'analyse</CardTitle>
+          <CardDescription>
+            Configurez le contexte pour que l'IA génère les recommandations les plus pertinentes.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-4 items-end gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="page-type">Type de page</Label>
+                <Select value={pageType} onValueChange={(v) => setPageType(v as any)}>
+                    <SelectTrigger id="page-type"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="homepage">Page d'accueil</SelectItem>
+                        <SelectItem value="category">Page catégorie (Hôtels, Voitures...)</SelectItem>
+                        <SelectItem value="search">Page de résultats de recherche</SelectItem>
+                        <SelectItem value="listing">Page de détail (Hôtel, Ville...)</SelectItem>
+                    </SelectContent>
+                </Select>
+              </div>
+               <div className="space-y-2">
+                <Label htmlFor="country-focus">Marché Cible</Label>
+                <Select value={countryFocus} onValueChange={(v) => setCountryFocus(v as any)}>
+                    <SelectTrigger id="country-focus"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="Algeria">Algérie</SelectItem>
+                        <SelectItem value="Egypt">Égypte</SelectItem>
+                        <SelectItem value="Both">Les deux</SelectItem>
+                    </SelectContent>
+                </Select>
+              </div>
+               <div className="space-y-2">
+                <Label htmlFor="entity-name">Nom de l'entité (Optionnel)</Label>
+                <Input 
+                    id="entity-name"
+                    placeholder="Ex: Alger, Hôtel El-Aurassi..."
+                    value={entityName}
+                    onChange={(e) => setEntityName(e.target.value)}
+                />
+              </div>
+              <Button type="submit" disabled={isPending} className="w-full md:w-auto">
+                {isPending ? (
+                  <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Analyse...</>
+                ) : (
+                  <><Wand2 className="mr-2 h-4 w-4" /> Lancer l'optimisation</>
+                )}
+              </Button>
+          </form>
+        </CardContent>
+      </Card>
+      
+       {(result || error) && (
+        <Card className="mt-8">
+            <CardHeader>
+                <CardTitle>Résultats de l'Optimisation SEO</CardTitle>
+            </CardHeader>
+            <CardContent>
+                {error && (
+                    <Alert variant="destructive">
+                        <AlertTitle>Erreur</AlertTitle>
+                        <AlertDescription>{error}</AlertDescription>
+                    </Alert>
+                )}
+                {result && (
+                    <div className="space-y-6">
+                        <div className="space-y-2">
+                             <h4 className="font-semibold text-lg flex items-center gap-2"><FileText className="h-5 w-5 text-primary"/>Titre & Méta Description</h4>
+                             <div className="p-4 border rounded-md bg-muted/50">
+                                 <p className="font-mono text-sm text-foreground"><strong>Titre:</strong> {result.suggestedTitle}</p>
+                                 <p className="font-mono text-sm text-muted-foreground mt-2"><strong>Description:</strong> {result.suggestedDescription}</p>
+                             </div>
+                        </div>
+                        <div className="space-y-2">
+                             <h4 className="font-semibold text-lg flex items-center gap-2"><Key className="h-5 w-5 text-primary"/>Mots-Clés Suggérés</h4>
+                             <div className="flex flex-wrap gap-2">
+                                {result.primaryKeywords.map((kw: string) => <Badge key={kw} variant="default">{kw}</Badge>)}
+                                {result.secondaryKeywords.map((kw: string) => <Badge key={kw} variant="secondary">{kw}</Badge>)}
+                             </div>
+                        </div>
+                         <div className="space-y-2">
+                             <h4 className="font-semibold text-lg flex items-center gap-2"><Lightbulb className="h-5 w-5 text-primary"/>Recommandations Stratégiques</h4>
+                             <ul className="space-y-2">
+                                {result.strategicRecommendations.map((rec: string, i: number) => (
+                                    <li key={i} className="flex items-start gap-2">
+                                        <Dot className="h-6 w-6 text-primary flex-shrink-0 mt-0.5" />
+                                        <span className="text-sm text-muted-foreground">{rec}</span>
+                                    </li>
+                                ))}
+                             </ul>
+                        </div>
+                    </div>
+                )}
+            </CardContent>
+        </Card>
+       )}
+
+    </div>
+  );
 }
