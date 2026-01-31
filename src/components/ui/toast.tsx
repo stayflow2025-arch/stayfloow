@@ -1,8 +1,8 @@
-import * as React from "react";
-import * as ToastPrimitives from "@radix-ui/react-toast";
-import { cn } from "@/lib/utils";
+import * as React from "react"
+import * as ToastPrimitives from "@radix-ui/react-toast"
+import { cn } from "@/lib/utils"
 
-const ToastProvider = ToastPrimitives.Provider;
+const ToastProvider = ToastPrimitives.Provider
 
 const ToastViewport = React.forwardRef<
   React.ElementRef<typeof ToastPrimitives.Viewport>,
@@ -16,8 +16,8 @@ const ToastViewport = React.forwardRef<
     )}
     {...props}
   />
-));
-ToastViewport.displayName = ToastPrimitives.Viewport.displayName;
+))
+ToastViewport.displayName = ToastPrimitives.Viewport.displayName
 
 const Toast = React.forwardRef<
   React.ElementRef<typeof ToastPrimitives.Root>,
@@ -31,8 +31,8 @@ const Toast = React.forwardRef<
     )}
     {...props}
   />
-));
-Toast.displayName = ToastPrimitives.Root.displayName;
+))
+Toast.displayName = ToastPrimitives.Root.displayName
 
 const ToastTitle = React.forwardRef<
   React.ElementRef<typeof ToastPrimitives.Title>,
@@ -43,8 +43,8 @@ const ToastTitle = React.forwardRef<
     className={cn("text-sm font-semibold", className)}
     {...props}
   />
-));
-ToastTitle.displayName = ToastPrimitives.Title.displayName;
+))
+ToastTitle.displayName = ToastPrimitives.Title.displayName
 
 const ToastDescription = React.forwardRef<
   React.ElementRef<typeof ToastPrimitives.Description>,
@@ -55,8 +55,8 @@ const ToastDescription = React.forwardRef<
     className={cn("text-sm text-muted-foreground", className)}
     {...props}
   />
-));
-ToastDescription.displayName = ToastPrimitives.Description.displayName;
+))
+ToastDescription.displayName = ToastPrimitives.Description.displayName
 
 const ToastClose = React.forwardRef<
   React.ElementRef<typeof ToastPrimitives.Close>,
@@ -70,8 +70,8 @@ const ToastClose = React.forwardRef<
     )}
     {...props}
   />
-));
-ToastClose.displayName = ToastPrimitives.Close.displayName;
+))
+ToastClose.displayName = ToastPrimitives.Close.displayName
 
 export {
   ToastProvider,
@@ -80,4 +80,4 @@ export {
   ToastTitle,
   ToastDescription,
   ToastClose,
-};
+}
