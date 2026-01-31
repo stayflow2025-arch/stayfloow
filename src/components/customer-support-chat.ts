@@ -9,7 +9,7 @@ import { MessageSquare } from "lucide-react";
 
 export function CustomerSupportChat() {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<string[]>([
+  const [messages] = useState<string[]>([
     "Bonjour ! Comment pouvons-nous vous aider aujourd’hui ?",
   ]);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
@@ -60,6 +60,7 @@ export function CustomerSupportChat() {
                 <CardTitle className="text-base font-semibold">
                   Assistant StayFloow
                 </CardTitle>
+
                 <p className="text-xs text-green-500 flex items-center gap-1">
                   <span className="relative flex h-2 w-2">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
@@ -70,6 +71,7 @@ export function CustomerSupportChat() {
               </div>
             </div>
           </CardHeader>
+
           <CardContent
             ref={scrollAreaRef}
             className="flex-1 overflow-y-auto p-4 space-y-2"
