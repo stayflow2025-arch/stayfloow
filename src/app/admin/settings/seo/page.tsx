@@ -1,12 +1,39 @@
-
 "use client";
+
 import React, { useState } from "react";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { 
+  Card, 
+  CardContent, 
+  CardDescription, 
+  CardFooter, 
+  CardHeader, 
+  CardTitle 
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Loader2, Search, Wand2, Lightbulb, FileText, Key, Dot } from "lucide-react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { 
+  Loader2, 
+  Search, 
+  Wand2, 
+  Lightbulb, 
+  FileText, 
+  Key, 
+  Dot,
+  CheckCircle2,
+  AlertCircle
+} from "lucide-react";
+import { 
+  Alert, 
+  AlertDescription, 
+  AlertTitle 
+} from "@/components/ui/alert";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 
@@ -19,119 +46,161 @@ export default function SeoOptimizerPage() {
   const [countryFocus, setCountryFocus] = useState('Both');
   const [entityName, setEntityName] = useState('');
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    setError("La fonctionnalité d'optimisation IA est temporairement désactivée pour maintenance.");
-    setResult(null);
+    setIsPending(true);
+    setError(null);
+
+    // Simulation d'un appel API (à remplacer par ton service Firebase ou AI)
+    try {
+      setTimeout(() => {
+        setResult({
+          title: "Séjour de Luxe | " + entityName,
+          description: "Découvrez nos hébergements d'exception. Réservez votre séjour dès maintenant.",
+          keywords: ["location", "vacances", "luxe", entityName]
+        });
+        setIsPending(false);
+      }, 1500);
+    } catch (err) {
+      setError("Une erreur est survenue lors de la génération.");
+      setIsPending(false);
+    }
   };
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 space-y-8">
-       <div className="mb-6">
-            <h1 className="text-3xl font-headline font-bold flex items-center gap-3">
-                <Search className="h-8 w-8 text-primary" />
-                Optimiseur de Mots-Clés SEO
-            </h1>
-            <p className="text-muted-foreground mt-2">Utilisez l'IA pour générer des titres, des descriptions et des mots-clés optimisés afin d'améliorer votre classement sur les moteurs de recherche.</p>
-        </div>
+    <div className="container mx-auto py-10 space-y-8">
+      <div className="flex flex-col gap-2">
+        <h1 className="text-3xl font-bold tracking-tight">Optimiseur SEO</h1>
+        <p className="text-muted-foreground">
+          Générez des méta-données optimisées pour vos pages grâce à l'IA.
+        </p>
+      </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Paramètres de l'analyse</CardTitle>
-          <CardDescription>
-            Configurez le contexte pour que l'IA génère les recommandations les plus pertinentes.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-4 items-end gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Formulaire de configuration */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Wand2 className="h-5 w-5" />
+              Configuration
+            </CardTitle>
+            <CardDescription>
+              Remplissez les informations pour obtenir des suggestions.
+            </CardDescription>
+          </CardHeader>
+          <form onSubmit={handleSubmit}>
+            <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="page-type">Type de page</Label>
-                <Select value={pageType} onValueChange={(v) => setPageType(v as any)}>
-                    <SelectTrigger id="page-type"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="homepage">Page d'accueil</SelectItem>
-                        <SelectItem value="category">Page catégorie (Hôtels, Voitures...)</SelectItem>
-                        <SelectItem value="search">Page de résultats de recherche</SelectItem>
-                        <SelectItem value="listing">Page de détail (Hôtel, Ville...)</SelectItem>
-                    </SelectContent>
-                </Select>
-              </div>
-               <div className="space-y-2">
-                <Label htmlFor="country-focus">Marché Cible</Label>
-                <Select value={countryFocus} onValueChange={(v) => setCountryFocus(v as any)}>
-                    <SelectTrigger id="country-focus"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="Algeria">Algérie</SelectItem>
-                        <SelectItem value="Egypt">Égypte</SelectItem>
-                        <SelectItem value="Both">Les deux</SelectItem>
-                    </SelectContent>
-                </Select>
-              </div>
-               <div className="space-y-2">
-                <Label htmlFor="entity-name">Nom de l'entité (Optionnel)</Label>
+                <Label htmlFor="entity">Nom de l'établissement / Page</Label>
                 <Input 
-                    id="entity-name"
-                    placeholder="Ex: Alger, Hôtel El-Aurassi..."
-                    value={entityName}
-                    onChange={(e) => setEntityName(e.target.value)}
+                  id="entity" 
+                  placeholder="ex: Villa Belle Vue" 
+                  value={entityName}
+                  onChange={(e) => setEntityName(e.target.value)}
+                  required
                 />
               </div>
-              <Button type="submit" disabled={isPending} className="w-full md:w-auto">
+
+              <div className="space-y-2">
+                <Label>Type de page</Label>
+                <Select value={pageType} onValueChange={setPageType}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Sélectionnez un type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="homepage">Page d'accueil</SelectItem>
+                    <SelectItem value="property">Fiche propriété</SelectItem>
+                    <SelectItem value="blog">Article de blog</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Cible géographique</Label>
+                <Select value={countryFocus} onValueChange={setCountryFocus}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="FR">France</SelectItem>
+                    <SelectItem value="EN">International (Anglais)</SelectItem>
+                    <SelectItem value="Both">Multilingue</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </CardContent>
+            <CardFooter>
+              <Button type="submit" className="w-full" disabled={isPending}>
                 {isPending ? (
-                  <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Analyse...</>
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Analyse en cours...
+                  </>
                 ) : (
-                  <><Wand2 className="mr-2 h-4 w-4" /> Lancer l'optimisation</>
+                  <>
+                    <Search className="mr-2 h-4 w-4" />
+                    Générer les suggestions
+                  </>
                 )}
               </Button>
+            </CardFooter>
           </form>
-        </CardContent>
-      </Card>
-      
-       {(result || error) && (
-        <Card className="mt-8">
-            <CardHeader>
-                <CardTitle>Résultats de l'Optimisation SEO</CardTitle>
-            </CardHeader>
-            <CardContent>
-                {error && (
-                    <Alert variant="destructive">
-                        <AlertTitle>Erreur</AlertTitle>
-                        <AlertDescription>{error}</AlertDescription>
-                    </Alert>
-                )}
-                {result && (
-                    <div className="space-y-6">
-                        <div className="space-y-2">
-                             <h4 className="font-semibold text-lg flex items-center gap-2"><FileText className="h-5 w-5 text-primary"/>Titre & Méta Description</h4>
-                             <div className="p-4 border rounded-md bg-muted/50">
-                                 <p className="font-mono text-sm text-foreground"><strong>Titre:</strong> {result.suggestedTitle}</p>
-                                 <p className="font-mono text-sm text-muted-foreground mt-2"><strong>Description:</strong> {result.suggestedDescription}</p>
-                             </div>
-                        </div>
-                        <div className="space-y-2">
-                             <h4 className="font-semibold text-lg flex items-center gap-2"><Key className="h-5 w-5 text-primary"/>Mots-Clés Suggérés</h4>
-                             <div className="flex flex-wrap gap-2">
-                                {result.primaryKeywords.map((kw: string) => <Badge key={kw} variant="default">{kw}</Badge>)}
-                                {result.secondaryKeywords.map((kw: string) => <Badge key={kw} variant="secondary">{kw}</Badge>)}
-                             </div>
-                        </div>
-                         <div className="space-y-2">
-                             <h4 className="font-semibold text-lg flex items-center gap-2"><Lightbulb className="h-5 w-5 text-primary"/>Recommandations Stratégiques</h4>
-                             <ul className="space-y-2">
-                                {result.strategicRecommendations.map((rec: string, i: number) => (
-                                    <li key={i} className="flex items-start gap-2">
-                                        <Dot className="h-6 w-6 text-primary flex-shrink-0 mt-0.5" />
-                                        <span className="text-sm text-muted-foreground">{rec}</span>
-                                    </li>
-                                ))}
-                             </ul>
-                        </div>
-                    </div>
-                )}
-            </CardContent>
         </Card>
-       )}
 
+        {/* Résultats */}
+        <div className="space-y-6">
+          {error && (
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Erreur</AlertTitle>
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+
+          {result ? (
+            <Card className="border-green-200 bg-green-50/30">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <CheckCircle2 className="h-5 w-5 text-green-600" />
+                  Suggestions SEO
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="p-3 bg-white border rounded-md shadow-sm">
+                  <p className="text-xs font-bold text-blue-600 truncate mb-1">
+                    Aperçu Google
+                  </p>
+                  <h3 className="text-blue-800 text-lg hover:underline cursor-pointer font-medium mb-1">
+                    {result.title}
+                  </h3>
+                  <p className="text-sm text-green-700 mb-1">
+                    https://stayflow.com/votre-page
+                  </p>
+                  <p className="text-sm text-gray-600 line-clamp-2">
+                    {result.description}
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="flex items-center gap-1">
+                    <Key className="h-3 w-3" /> Mots-clés suggérés
+                  </Label>
+                  <div className="flex flex-wrap gap-2">
+                    {result.keywords.map((kw: string, i: number) => (
+                      <Badge key={i} variant="secondary">{kw}</Badge>
+                    ))}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="h-full flex flex-col items-center justify-center border-2 border-dashed rounded-lg p-12 text-center text-muted-foreground">
+              <Lightbulb className="h-12 w-12 mb-4 opacity-20" />
+              <p>Lancez l'analyse pour voir les recommandations s'afficher ici.</p>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
