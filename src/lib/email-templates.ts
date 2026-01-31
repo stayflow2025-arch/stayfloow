@@ -1,4 +1,6 @@
 
+"use server";
+
 // This file acts as a service to manage email templates.
 // It uses default templates for server-side rendering.
 // Customization is handled by a client-side hook that can override these defaults.
@@ -172,15 +174,11 @@ export async function getEmailTemplate(name: EmailTemplateName, data: Record<str
     
     let processedBody : string;
     // For favorite reminder, we don't want to replace \n with <br> as it's already HTML
-    if (name === 'favoriteReminder' || name === 'passwordReset' || name === 'partnerWelcome') {
+    if (name === 'favoriteReminder' || name === 'passwordReset' || name === 'partnerWelcome' || name === 'newSubmissionAdminNotification') {
         processedBody = renderTemplate(templateSource.body, processedData);
     } else {
         processedBody = renderTemplate(templateSource.body, processedData).replace(/\n/g, '<br>');
     }
     
     return { subject: processedSubject, body: `<div style="font-family: Arial, sans-serif; line-height: 1.6;">${processedBody}</div>` };
-}
-
-    
-
 }
