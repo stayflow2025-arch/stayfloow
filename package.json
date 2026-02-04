@@ -1,3 +1,4 @@
+cat > package.json << 'EOF'
 {
   "name": "stayfloow",
   "version": "1.0.0",
@@ -8,6 +9,7 @@
     "start": "next start"
   },
   "dependencies": {
+<<<<<<< HEAD
     "@genkit-ai/googleai": "^1.28.0",
     "@hookform/resolvers": "^5.2.2",
     "@icons-pack/react-simple-icons": "^13.8.0",
@@ -47,3 +49,11 @@
     "typescript": "5.9.3"
   }
 }
+=======
+    "next": "14.2.5",
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
+  }
+}
+EOF
+>>>>>>> aef7fe5b9a758da028e0f2e2d28b30a4b7b5e706

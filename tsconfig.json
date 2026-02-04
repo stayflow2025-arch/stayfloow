@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+<<<<<<< HEAD
     "baseUrl": ".",
     "paths": {
       "@/*": [
@@ -8,6 +9,14 @@
     },
     "strict": false,
     "skipLibCheck": true,
+=======
+    "target": "esnext",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+>>>>>>> aef7fe5b9a758da028e0f2e2d28b30a4b7b5e706
     "noEmit": true,
     "target": "es2017",
     "lib": [
@@ -23,6 +32,7 @@
     "esModuleInterop": true,
     "module": "esnext",
     "incremental": true,
+<<<<<<< HEAD
     "plugins": [
       {
         "name": "next"
@@ -39,4 +49,13 @@
   "exclude": [
     "node_modules"
   ]
+=======
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules"]
+>>>>>>> aef7fe5b9a758da028e0f2e2d28b30a4b7b5e706
 }

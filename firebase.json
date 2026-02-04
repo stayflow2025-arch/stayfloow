@@ -1,0 +1,14 @@
+cat > firebase.json << 'EOF'
+{
+  "hosting": {
+    "public": ".firebase",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}
+EOF
