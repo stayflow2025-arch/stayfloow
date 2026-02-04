@@ -1,117 +1,103 @@
-"use server";
+import { Resend } from "resend";
+import { getEmailTemplate } from "./email-templates";
+import type { Property } from "./data";
 
-// ===============================
-// EMAIL TEMPLATES
-// ===============================
+// ------------------------------
+// CONFIG RESEND
+// ------------------------------
+const resendApiKey = process.env.RESEND_API_KEY;
 
-// Template de confirmation de réservation
-export function bookingConfirmationEmail(data: any) {
-  return {
-    subject: `Confirmation de réservation #${data.reservationNumber}`,
-    body: `
-      <p>Bonjour ${data.customerName},</p>
-
-      <p>Votre réservation pour <strong>${data.itemName}</strong> a bien été confirmée.</p>
-
-      ${data.detailsHtml || ""}
-
-      <p>Merci pour votre confiance.</p>
-      <p>L'équipe StayFloow</p>
-    `,
-  };
+if (!resendApiKey) {
+  console.warn("RESEND_API_KEY is not set. Emails will not be sent.");
 }
 
-// Template de bienvenue partenaire
-export function partnerWelcomeEmail(data: any) {
-  return {
-    subject: `Bienvenue sur StayFloow !`,
-    body: `
-      <p>Bonjour ${data.hostName},</p>
+const resend = resendApiKey ? new Resend(resendApiKey) : null;
 
-      <p>Votre ${data.submissionType} "<strong>${data.submissionName}</strong>" a bien été enregistré.</p>
+// ------------------------------
+// TYPES
+// ------------------------------
+type BaseEmailPayload = {
+  to: string;
+  templateName: string;
+  data: Record<string, any>;
+};
 
-      <p>Numéro de référence : <strong>${data.referenceNumber}</strong></p>
-
-      <p>Pour configurer votre compte partenaire :</p>
-      <p><a href="${data.setupLink}">Cliquez ici</a></p>
-
-      <p>Merci et bienvenue !</p>
-      <p>L'équipe StayFloow</p>
-    `,
+type BookingEmailPayload = BaseEmailPayload & {
+  templateName: "bookingConfirmation";
+  data: {
+    reservationNumber: string;
+    customerName: string;
+    itemName: string;
+    detailsHtml?: string;
   };
-}
+};
 
-// Template de rappel favoris
-export function favoriteReminderEmail(data: any) {
-  return {
-    subject: `Vous avez aimé ${data.propertyName}`,
-    body: `
-      <p>Bonjour ${data.customerName},</p>
-
-      <p>Vous avez récemment consulté <strong>${data.propertyName}</strong>.</p>
-
-      <p>${data.propertyDescription}</p>
-
-      <p><a href="${data.propertyUrl}">Voir la propriété</a></p>
-
-      <p>L'équipe StayFloow</p>
-    `,
+type PartnerWelcomeEmailPayload = BaseEmailPayload & {
+  templateName: "partnerWelcome";
+  data: {
+    hostName: string;
+    submissionType: string;
+    submissionName: string;
+    referenceNumber: string;
+    setupLink: string;
   };
-}
+};
 
-// Template de notification admin
-export function newSubmissionAdminNotificationEmail(data: any) {
-  return {
-    subject: `Nouvelle soumission : ${data.submissionName}`,
-    body: `
-      <p>Type : ${data.submissionType}</p>
-      <p>Nom : ${data.submissionName}</p>
-      <p>Partenaire : ${data.partnerName}</p>
-      <p>Email : ${data.partnerEmail}</p>
-      <p>Téléphone : ${data.partnerPhone}</p>
-
-      <p><a href="${data.adminUrl}">Voir dans l'admin</a></p>
-    `,
+type FavoriteReminderEmailPayload = BaseEmailPayload & {
+  templateName: "favoriteReminder";
+  data: {
+    customerName: string;
+    propertyName: string;
+    propertyDescription: string;
+    propertyUrl: string;
   };
-}
+};
 
-// Template de reset mot de passe
-export function passwordResetEmail(data: any) {
-  return {
-    subject: `Réinitialisation de votre mot de passe`,
-    body: `
-      <p>Bonjour,</p>
-
-      <p>Pour réinitialiser votre mot de passe, cliquez sur le lien suivant :</p>
-
-      <p><a href="${data.resetLink}">Réinitialiser mon mot de passe</a></p>
-
-      <p>L'équipe StayFloow</p>
-    `,
+type NewSubmissionAdminNotificationPayload = BaseEmailPayload & {
+  templateName: "newSubmissionAdminNotification";
+  data: {
+    submissionType: string;
+    submissionName: string;
+    partnerName: string;
+    partnerEmail: string;
+    partnerPhone: string;
+    adminUrl: string;
   };
-}
+};
 
-// ===============================
-// ROUTEUR DE TEMPLATES
-// ===============================
-export function getEmailTemplate(templateName: string, data: any) {
-  switch (templateName) {
-    case "bookingConfirmation":
-      return bookingConfirmationEmail(data);
+type PasswordResetEmailPayload = BaseEmailPayload & {
+  templateName: "passwordReset";
+  data: {
+    resetLink: string;
+  };
+};
 
-    case "partnerWelcome":
-      return partnerWelcomeEmail(data);
+export type SendEmailPayload =
+  | BookingEmailPayload
+  | PartnerWelcomeEmailPayload
+  | FavoriteReminderEmailPayload
+  | NewSubmissionAdminNotificationPayload
+  | PasswordResetEmailPayload;
 
-    case "favoriteReminder":
-      return favoriteReminderEmail(data);
-
-    case "newSubmissionAdminNotification":
-      return newSubmissionAdminNotificationEmail(data);
-
-    case "passwordReset":
-      return passwordResetEmail(data);
-
-    default:
-      throw new Error(`Unknown email template: ${templateName}`);
+// ------------------------------
+// FONCTION PRINCIPALE D’ENVOI
+// ------------------------------
+export async function sendTemplatedEmail(payload: SendEmailPayload) {
+  if (!resend) {
+    console.warn("Resend client not configured. Skipping email send.");
+    return { skipped: true };
   }
+
+  const { to, templateName, data } = payload;
+
+  const { subject, body } = await getEmailTemplate(templateName, data);
+
+  const result = await resend.emails.send({
+    from: "StayFloow <no-reply@stayfloow.com>",
+    to,
+    subject,
+    html: body,
+  });
+
+  return result;
 }
