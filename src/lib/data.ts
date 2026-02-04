@@ -400,3 +400,43 @@ export const paymentSettings = {
   taxRate: 0.19,
   serviceFee: 0.05
 };
+
+// ===============================
+// PENDING ENTITIES & CIRCUITS
+// ===============================
+
+export type PendingCar = {
+  id: string;
+  brand: string;
+  model: string;
+  pricePerDay: number;
+  features: CarFeature[];
+  image: string;
+};
+
+export type PendingCircuit = {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  days: number;
+  images: string[];
+};
+
+export type Circuit = {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  days: number;
+  images: string[];
+};
+
+// Circuits disponibles (vide pour l’instant)
+export const circuits: Circuit[] = [];
+
+// Circuits en attente de validation
+export const pendingCircuits: PendingCircuit[] = [];
+
+// Voitures en attente de validation
+export const pendingCars: PendingCar[] = [];
