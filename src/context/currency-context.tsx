@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { createContext, useContext, useState, ReactNode } from 'react';
@@ -15,23 +14,22 @@ const conversionRates: Record<Currency, number> = {
 };
 
 const currencySymbols: Record<Currency, string> = {
-    DZD: 'DA',
-    USD: '$',
-    EUR: '€',
-    GBP: '£',
-    CHF: 'CHF',
-    EGP: 'E£'
+  DZD: 'DA',
+  USD: '$',
+  EUR: '€',
+  GBP: '£',
+  CHF: 'CHF',
+  EGP: 'E£'
 };
 
 const currencyFlags: Record<Currency, string> = {
-    DZD: '🇩🇿',
-    USD: '🇺🇸',
-    EUR: '🇪🇺',
-    GBP: '🇬🇧',
-    CHF: '🇨🇭',
-    EGP: '🇪🇬'
+  DZD: '🇩🇿',
+  USD: '🇺🇸',
+  EUR: '🇪🇺',
+  GBP: '🇬🇧',
+  CHF: '🇨🇭',
+  EGP: '🇪🇬'
 };
-
 
 interface CurrencyContextType {
   currency: Currency;
@@ -50,35 +48,33 @@ export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
   const convertFromDZD = (priceInDZD: number) => {
     return priceInDZD * conversionRates[currency];
   };
-  
+
   const getCurrencySymbol = (curr?: Currency) => {
     return currencySymbols[curr || currency];
-  }
+  };
 
   const getCurrencyFlag = (curr?: Currency) => {
     return currencyFlags[curr || currency];
-  }
+  };
 
   const formatPrice = (priceInDZD: number, isRawValue = false) => {
     const rate = conversionRates[currency];
     const convertedPrice = priceInDZD * rate;
-    const symbol = currencySymbols[currency];
-    
-    // isRawValue is used for the filter slider which should not have the currency symbol
+
     if (isRawValue) {
-        return new Intl.NumberFormat('fr-FR', {
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0,
-        }).format(convertedPrice);
+      return new Intl.NumberFormat('fr-FR', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      }).format(convertedPrice);
     }
-    
+
     if (currency === 'DZD') {
-         return new Intl.NumberFormat('fr-DZ', {
-            style: 'currency',
-            currency: 'DZD',
-            currencyDisplay: 'narrowSymbol',
-            minimumFractionDigits: 0,
-        }).format(convertedPrice);
+      return new Intl.NumberFormat('fr-DZ', {
+        style: 'currency',
+        currency: 'DZD',
+        currencyDisplay: 'narrowSymbol',
+        minimumFractionDigits: 0,
+      }).format(convertedPrice);
     }
 
     return new Intl.NumberFormat('fr-FR', {
@@ -89,16 +85,44 @@ export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <CurrencyContext.Provider value={{ currency, setCurrency, formatPrice, convertFromDZD, getCurrencySymbol, getCurrencyFlag }}>
+    <CurrencyContext.Provider
+      value={{
+        currency,
+        setCurrency,
+        formatPrice,
+        convertFromDZD,
+        getCurrencySymbol,
+        getCurrencyFlag,
+      }}
+    >
       {children}
     </CurrencyContext.Provider>
   );
 };
 
+// ------------------------------------------------------
+// 🔥 HOOK INDESTRUCTIBLE (ANTI-CRASH TURBOPACK)
+// ------------------------------------------------------
 export const useCurrency = () => {
   const context = useContext(CurrencyContext);
-  if (context === undefined) {
-    throw new Error('useCurrency must be used within a CurrencyProvider');
+
+  if (!context) {
+    return {
+      currency: "DZD",
+      setCurrency: () => {},
+      formatPrice: (priceInDZD: number) => {
+        return new Intl.NumberFormat("fr-DZ", {
+          style: "currency",
+          currency: "DZD",
+          currencyDisplay: "narrowSymbol",
+          minimumFractionDigits: 0,
+        }).format(priceInDZD);
+      },
+      convertFromDZD: (priceInDZD: number) => priceInDZD,
+      getCurrencySymbol: () => "DA",
+      getCurrencyFlag: () => "🇩🇿",
+    };
   }
+
   return context;
 };

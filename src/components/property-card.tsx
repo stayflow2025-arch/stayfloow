@@ -33,16 +33,23 @@ export function PropertyCard({ property, isGenius = false, viewMode = 'grid' }: 
   const { formatPrice } = useCurrency();
   const { toast } = useToast();
   const [isFavorited, setIsFavorited] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const discountedPrice = property.price * 0.9;
 
   useEffect(() => {
-    try {
-        const favorites: string[] = JSON.parse(localStorage.getItem('favorites') || '[]');
-        setIsFavorited(favorites.includes(property.id));
-    } catch (e) {
-        // If localStorage is unavailable or parsing fails, just default to not favorited.
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (isMounted) {
+      try {
+          const favorites: string[] = JSON.parse(localStorage.getItem('favorites') || '[]');
+          setIsFavorited(favorites.includes(property.id));
+      } catch (e) {
+          // If localStorage is unavailable or parsing fails, just default to not favorited.
+      }
     }
-  }, [property.id]);
+  }, [property.id, isMounted]);
   
   const handleFavoriteToggle = async () => {
     const newFavoritedState = !isFavorited;
@@ -89,9 +96,11 @@ export function PropertyCard({ property, isGenius = false, viewMode = 'grid' }: 
                 className="object-cover"
                 sizes="(max-width: 768px) 100vw, 350px"
             />
-            <Button variant="ghost" size="icon" className="absolute top-2 right-2 bg-black/30 text-white hover:bg-black/50 hover:text-white rounded-full z-10" onClick={handleFavoriteToggle}>
-                <Heart className={cn("h-5 w-5", isFavorited && "fill-red-500 text-red-500")} />
-            </Button>
+            {isMounted && (
+              <Button variant="ghost" size="icon" className="absolute top-2 right-2 bg-black/30 text-white hover:bg-black/50 hover:text-white rounded-full z-10" onClick={handleFavoriteToggle}>
+                  <Heart className={cn("h-5 w-5", isFavorited && "fill-red-500 text-red-500")} />
+              </Button>
+            )}
         </div>
         <div className="flex flex-col flex-grow">
             <div className="flex-grow p-4 space-y-2">
@@ -191,9 +200,11 @@ export function PropertyCard({ property, isGenius = false, viewMode = 'grid' }: 
               </Badge>
           )}
         </div>
-        <Button variant="ghost" size="icon" className="absolute top-2 right-2 bg-black/30 text-white hover:bg-black/50 hover:text-white rounded-full z-10" onClick={handleFavoriteToggle}>
-            <Heart className={cn("h-5 w-5", isFavorited && "fill-red-500 text-red-500")} />
-        </Button>
+        {isMounted && (
+          <Button variant="ghost" size="icon" className="absolute top-2 right-2 bg-black/30 text-white hover:bg-black/50 hover:text-white rounded-full z-10" onClick={handleFavoriteToggle}>
+              <Heart className={cn("h-5 w-5", isFavorited && "fill-red-500 text-red-500")} />
+          </Button>
+        )}
       </div>
       <CardContent className="p-4 flex-grow">
         <div className="flex justify-between items-start gap-2">
