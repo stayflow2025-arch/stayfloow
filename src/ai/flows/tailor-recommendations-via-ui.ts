@@ -1,9 +1,4 @@
-<<<<<<< HEAD
-export async function tailorRecommendationsViaUI(input: any) {
-  return {
-    message: "Recommandations générées.",
-    input,
-=======
+
 export async function tailorRecommendationsViaUI({
   userPreferences,
   recommendationToolEnabled,
@@ -15,6 +10,7 @@ export async function tailorRecommendationsViaUI({
   pastBookings: string;
   travelerProfiles: string;
 }) {
+  // Simule un délai pour imiter un traitement IA
   await new Promise((resolve) => setTimeout(resolve, 1200));
 
   if (!recommendationToolEnabled) {
@@ -39,6 +35,5 @@ Historique : ${pastBookings}
 
   return {
     accommodations: generatedText.trim(),
->>>>>>> aef7fe5b9a758da028e0f2e2d28b30a4b7b5e706
   };
 }

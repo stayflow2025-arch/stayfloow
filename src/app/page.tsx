@@ -15,87 +15,44 @@ import { useLanguage } from '@/context/language-context';
 import { useState, useEffect } from 'react';
 
 export default function Home() {
-  console.log("DEBUG: Home component loaded");
-
   const { t } = useLanguage();
   const isGenius = mockUser?.isGenius || false;
-<<<<<<< HEAD
 
-  console.log("DEBUG: Initializing state");
-=======
-  
-  // 1. On initialise avec une liste vide ou stable pour éviter le décalage Serveur/Client
->>>>>>> aef7fe5b9a758da028e0f2e2d28b30a4b7b5e706
+  // 1. On initialise avec une liste vide pour éviter le décalage SSR/CSR
   const [properties, setProperties] = useState<Property[]>([]);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-<<<<<<< HEAD
-    console.log("DEBUG: useEffect triggered");
     setMounted(true);
 
     try {
-      console.log("DEBUG: Loading approvedProperties from localStorage");
-      const approvedProperties: Property[] = JSON.parse(localStorage.getItem('approvedProperties') || '[]');
+      const approvedProperties: Property[] = JSON.parse(
+        localStorage.getItem('approvedProperties') || '[]'
+      );
 
       const combined = [...initialProperties, ...approvedProperties];
-      console.log("DEBUG: Combined properties:", combined);
 
+      // Supprimer les doublons par ID
       const propertyMap = new Map();
-      combined.forEach(p => {
+      combined.forEach((p) => {
         if (p && p.id) propertyMap.set(p.id, p);
       });
 
-      const finalList = Array.from(propertyMap.values());
-      console.log("DEBUG: Final property list:", finalList);
-
-      setProperties(finalList);
+      setProperties(Array.from(propertyMap.values()));
     } catch (error) {
-      console.log("DEBUG: Error loading properties, fallback to initialProperties");
       setProperties(initialProperties);
     }
   }, []);
 
+  // 2. Sécurité : si pas monté → squelette invisible
   if (!mounted) {
-    console.log("DEBUG: Component not mounted yet");
     return <div className="min-h-screen bg-white" />;
   }
 
-  console.log("DEBUG: Component mounted, rendering page");
-
-=======
-    setMounted(true);
-    try {
-        const approvedProperties: Property[] = JSON.parse(localStorage.getItem('approvedProperties') || '[]');
-        const combined = [...initialProperties, ...approvedProperties];
-        
-        // Supprimer les doublons par ID
-        const propertyMap = new Map();
-        combined.forEach(p => {
-            if (p && p.id) propertyMap.set(p.id, p);
-        });
-        
-        setProperties(Array.from(propertyMap.values()));
-    } catch (error) {
-        setProperties(initialProperties);
-    }
-  }, []);
-
-  // 2. Sécurité : Si les traductions ne sont pas prêtes ou si le composant n'est pas monté
-  if (!mounted) {
-    return <div className="min-h-screen bg-white" />; // Loader invisible ou squelette
-  }
-
->>>>>>> aef7fe5b9a758da028e0f2e2d28b30a4b7b5e706
   const featuredProperties = properties.slice(0, 4);
-  console.log("DEBUG: Featured properties:", featuredProperties);
 
   return (
     <div className="space-y-16 pb-16">
-<<<<<<< HEAD
-
-=======
->>>>>>> aef7fe5b9a758da028e0f2e2d28b30a4b7b5e706
       {/* Hero Section */}
       <section className="relative h-[60vh] min-h-[450px] w-full">
         <Image
@@ -123,11 +80,7 @@ export default function Home() {
         </div>
       </section>
 
-<<<<<<< HEAD
-      {/* Personalized Recommendations */}
-=======
       {/* Recommendations */}
->>>>>>> aef7fe5b9a758da028e0f2e2d28b30a4b7b5e706
       <section className="container mx-auto px-4 pt-16">
         <PersonalizedRecommendations />
       </section>
@@ -145,7 +98,6 @@ export default function Home() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {featuredProperties.length > 0 ? (
             featuredProperties.map((property) => (
-<<<<<<< HEAD
               <PropertyCard
                 key={property.id}
                 property={property}
@@ -158,24 +110,13 @@ export default function Home() {
             </p>
           )}
         </div>
+
         <div className="text-center mt-8">
           <Link href="/search">
             <Button size="lg" variant="outline">
               {t('view_all_accommodations') || 'Tout voir'}
             </Button>
           </Link>
-=======
-              <PropertyCard key={property.id} property={property} isGenius={isGenius} />
-            ))
-          ) : (
-            <p className="col-span-full text-center text-muted-foreground">Chargement des propriétés...</p>
-          )}
-        </div>
-        <div className="text-center mt-8">
-            <Link href="/search">
-                <Button size="lg" variant="outline">{t('view_all_accommodations') || 'Tout voir'}</Button>
-            </Link>
->>>>>>> aef7fe5b9a758da028e0f2e2d28b30a4b7b5e706
         </div>
       </section>
 

@@ -1,21 +1,15 @@
+"use server";
+
 // ===============================
 // EMAIL TEMPLATES
 // ===============================
 
-<<<<<<< HEAD
 // Template de confirmation de réservation
 export function bookingConfirmationEmail(data: any) {
   return {
     subject: `Confirmation de réservation #${data.reservationNumber}`,
     body: `
       <p>Bonjour ${data.customerName},</p>
-=======
-"use server";
-
-// This file acts as a service to manage email templates.
-// It uses default templates for server-side rendering.
-// Customization is handled by a client-side hook that can override these defaults.
->>>>>>> aef7fe5b9a758da028e0f2e2d28b30a4b7b5e706
 
       <p>Votre réservation pour <strong>${data.itemName}</strong> a bien été confirmée.</p>
 
@@ -38,7 +32,6 @@ export function partnerWelcomeEmail(data: any) {
 
       <p>Numéro de référence : <strong>${data.referenceNumber}</strong></p>
 
-<<<<<<< HEAD
       <p>Pour configurer votre compte partenaire :</p>
       <p><a href="${data.setupLink}">Cliquez ici</a></p>
 
@@ -122,17 +115,3 @@ export function getEmailTemplate(templateName: string, data: any) {
       throw new Error(`Unknown email template: ${templateName}`);
   }
 }
-=======
-    const processedSubject = renderTemplate(templateSource.subject, processedData).replace(/<br>/g, ''); // Subject should not have line breaks
-    
-    let processedBody : string;
-    // For favorite reminder, we don't want to replace \n with <br> as it's already HTML
-    if (name === 'favoriteReminder' || name === 'passwordReset' || name === 'partnerWelcome' || name === 'newSubmissionAdminNotification') {
-        processedBody = renderTemplate(templateSource.body, processedData);
-    } else {
-        processedBody = renderTemplate(templateSource.body, processedData).replace(/\n/g, '<br>');
-    }
-    
-    return { subject: processedSubject, body: `<div style="font-family: Arial, sans-serif; line-height: 1.6;">${processedBody}</div>` };
-}
->>>>>>> aef7fe5b9a758da028e0f2e2d28b30a4b7b5e706

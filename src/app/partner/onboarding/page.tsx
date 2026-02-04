@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-export default function Page(){return <div>Onboarding</div>}
-=======
 export default function OnboardingPage() {
   return (
     <div className="p-6">
@@ -9,4 +6,3 @@ export default function OnboardingPage() {
     </div>
   );
 }
->>>>>>> aef7fe5b9a758da028e0f2e2d28b30a4b7b5e706
