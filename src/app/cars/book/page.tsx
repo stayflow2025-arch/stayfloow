@@ -1,14 +1,13 @@
-
 "use client";
 
 import { notFound, useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
-import { cars as initialCars, mockUser, paymentSettings as initialPaymentSettings, pendingCars as initialPendingCars } from '@/lib/data';
-import type { Car, BankDetails, PaymentSettings, PaymentMethod, PendingCar } from '@/lib/data';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { cars as initialCars, paymentSettings as initialPaymentSettings, pendingCars as initialPendingCars } from '@/lib/data';
+import type { Car, PaymentSettings, PendingCar } from '@/lib/data';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { Star, ArrowLeft, Banknote, CreditCard, Check, Sparkles, Calendar, User, Clock, FileText, CheckCircle, CalendarIcon } from 'lucide-react';
+import { ArrowLeft, CreditCard, CheckCircle, CalendarIcon, FileText } from 'lucide-react';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useForm } from 'react-hook-form';
@@ -31,6 +30,11 @@ import { format, addDays } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
+
+// --- AJOUT POUR CLOUDFLARE ---
+// Cette ligne indique à Next.js de ne pas chercher de serveur
+export const dynamic = 'force-static'; 
+// -----------------------------
 
 const bookingSchema = z.object({
     fullName: z.string().min(2, { message: "Le nom complet est requis." }),
@@ -71,12 +75,11 @@ const bookingSchema = z.object({
     }
 });
 
-
 function CarBookingForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { toast } = useToast();
-  const { formatPrice, currency } = useCurrency();
+  const { formatPrice } = useCurrency();
   const [car, setCar] = useState<Car | null>(null);
   const [paymentSettings, setPaymentSettings] = useState<PaymentSettings>(initialPaymentSettings);
   const [isBookingConfirmed, setIsBookingConfirmed] = useState(false);
@@ -107,7 +110,7 @@ function CarBookingForm() {
           setPaymentSettings(JSON.parse(savedSettings));
       }
     } catch (error) {
-        console.error("Could not load payment settings, using initial.", error);
+        console.error("Could not load payment settings.", error);
     }
 
     const approvedCars: Car[] = JSON.parse(localStorage.getItem('approvedCars') || '[]');
@@ -115,7 +118,7 @@ function CarBookingForm() {
     const allPendingCars = [...initialPendingCars, ...storedPending];
 
     const formattedPending: Car[] = allPendingCars
-      .filter(c => c.hasOwnProperty('carMake')) // Ensure it's a car submission
+      .filter(c => c.hasOwnProperty('carMake'))
       .map(p => ({
         id: p.id,
         make: p.carMake,
@@ -124,9 +127,9 @@ function CarBookingForm() {
         year: new Date().getFullYear(),
         pricePerDay: p.pricePerDay,
         location: p.location,
-        transmission: 'Manuelle', // Placeholder
-        fuelType: 'Essence', // Placeholder
-        seats: 5, // Placeholder
+        transmission: 'Manuelle',
+        fuelType: 'Essence',
+        seats: 5,
         features: [],
         images: p.images || [`https://picsum.photos/seed/pending-${p.id}/1200/800`],
         description: 'Aucune description fournie.',
@@ -138,9 +141,8 @@ function CarBookingForm() {
     
     if (foundCar) {
       setCar(foundCar);
-    } else {
-      notFound();
     }
+    // Suppression du notFound() pour éviter l'erreur pendant le build statique
   }, [searchParams, carId]);
   
   const enabledPaymentMethods = paymentSettings.methods.filter(m => m.enabled && m.id !== 'transfer');
@@ -162,7 +164,7 @@ function CarBookingForm() {
   const paymentMethod = form.watch("paymentMethod");
 
   if (!car) {
-    return <div>Chargement...</div>;
+    return <div className="p-8 text-center">Chargement du véhicule...</div>;
   }
   
   const getNumberOfDays = () => {
@@ -180,11 +182,8 @@ function CarBookingForm() {
   const totalToPayToday = baseRent + serviceFee;
 
   const onSubmit = async (values: z.infer<typeof bookingSchema>) => {
-    console.log(values);
     const reservationNumber = `ST-CAR-${Math.floor(1000 + Math.random() * 9000)}`;
     setReservationDetails({ number: reservationNumber, email: values.email });
-
-    let description = `Votre réservation pour ${car.make} ${car.model} est confirmée sous le numéro ${reservationNumber}. Un email de confirmation contenant les coordonnées du loueur a été envoyé à ${values.email}.`;
 
     await sendBookingConfirmationEmail({
         customerName: values.fullName,
@@ -220,10 +219,8 @@ function CarBookingForm() {
     setIsBookingConfirmed(true);
 
     toast({
-        title: "Votre réservation de véhicule est confirmée !",
-        description: description,
-        variant: 'default',
-        className: 'bg-accent text-accent-foreground'
+        title: "Réservation confirmée !",
+        description: "Vérifiez vos emails.",
     });
   }
 
@@ -233,7 +230,7 @@ function CarBookingForm() {
             <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
             <h1 className="font-headline text-3xl font-bold mb-2">Merci pour votre réservation !</h1>
             <p className="text-muted-foreground mb-4">
-                Un e-mail de confirmation a été envoyé à <strong>{reservationDetails.email}</strong> avec les détails complets de votre réservation n° <strong>{reservationDetails.number}</strong>.
+                Email envoyé à <strong>{reservationDetails.email}</strong> (n° <strong>{reservationDetails.number}</strong>).
             </p>
             <Separator className="my-8" />
             <CrossSellCard location={car.location} bookedItemType="car" />
@@ -244,35 +241,30 @@ function CarBookingForm() {
   return (
     <div className="container mx-auto px-4 py-8">
       <Button variant="ghost" onClick={() => router.back()} className="mb-4">
-        <ArrowLeft className="mr-2 h-4 w-4" />
-        Retour aux véhicules
+        <ArrowLeft className="mr-2 h-4 w-4" /> Retour
       </Button>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
         <div className="lg:col-span-1">
           <Card className="sticky top-24 shadow-lg">
             <CardHeader className="flex flex-row items-start gap-4">
               <div className="relative w-32 h-24 rounded-lg overflow-hidden flex-shrink-0">
-                  <Image src={car.images[0]} alt={`${car.make} ${car.model}`} fill className="object-cover" data-ai-hint="car side" />
+                  <Image src={car.images[0]} alt={car.model} fill className="object-cover" />
               </div>
               <div>
                   <p className="text-sm text-muted-foreground">{car.type}</p>
-                  <CardTitle className="text-lg font-semibold leading-tight">{car.make} ${car.model}</CardTitle>
-                   <div className="flex items-center gap-1 text-sm mt-1">
-                        <Badge variant="outline">{car.year}</Badge>
-                    </div>
+                  <CardTitle className="text-lg font-semibold">{car.make} {car.model}</CardTitle>
+                  <Badge variant="outline" className="mt-1">{car.year}</Badge>
               </div>
             </CardHeader>
             <CardContent>
                 <Separator className="my-4" />
-                <h3 className="font-headline text-xl font-semibold mb-4">Récapitulatif de la location</h3>
                 <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
-                        <span className="text-muted-foreground">{formatPrice(car.pricePerDay)} x {days} {days > 1 ? 'jours' : 'jour'}</span>
+                        <span>{formatPrice(car.pricePerDay)} x {days}j</span>
                         <span>{formatPrice(baseRent)}</span>
                     </div>
-                    <div className="flex justify-between">
-                        <span className="text-muted-foreground">Frais de service (20%)</span>
+                    <div className="flex justify-between text-muted-foreground">
+                        <span>Frais (20%)</span>
                         <span>{formatPrice(serviceFee)}</span>
                     </div>
                 </div>
@@ -280,7 +272,7 @@ function CarBookingForm() {
                 <CardFooter className="flex-col items-start gap-4">
                     <Separator />
                     <div className="flex justify-between font-bold text-lg w-full">
-                        <span>Total à payer</span>
+                        <span>Total</span>
                         <span>{formatPrice(totalToPayToday)}</span>
                     </div>
                 </CardFooter>
@@ -288,165 +280,77 @@ function CarBookingForm() {
         </div>
 
         <div className="lg:col-span-2">
-            <div className="flex items-center gap-4 mb-6">
-                <h1 className="font-headline text-3xl font-bold">Confirmez et payez</h1>
-            </div>
-            
+            <h1 className="font-headline text-3xl font-bold mb-6">Confirmez et payez</h1>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                     <Card>
-                        <CardHeader>
-                            <CardTitle>Vos informations</CardTitle>
-                        </CardHeader>
+                        <CardHeader><CardTitle>Informations</CardTitle></CardHeader>
                         <CardContent className="space-y-4">
                             <div>
-                                <Label htmlFor="dates">Dates de location</Label>
+                                <Label>Dates</Label>
                                 <Popover open={isDatePopoverOpen} onOpenChange={setIsDatePopoverOpen}>
                                     <PopoverTrigger asChild>
-                                        <Button
-                                            id="dates"
-                                            variant={"outline"}
-                                            className={cn(
-                                                "w-full justify-start text-left font-normal mt-1",
-                                                !dates && "text-muted-foreground"
-                                            )}
-                                        >
+                                        <Button variant={"outline"} className="w-full justify-start mt-1">
                                             <CalendarIcon className="mr-2 h-4 w-4" />
-                                            {dates?.from ? (
-                                                dates.to ? (
-                                                    <>
-                                                        {format(dates.from, "dd LLL y", { locale: fr })} -{" "}
-                                                        {format(dates.to, "dd LLL y", { locale: fr })}
-                                                    </>
-                                                ) : (
-                                                    format(dates.from, "dd LLL y", { locale: fr })
-                                                )
-                                            ) : (
-                                                <span>Choisissez vos dates</span>
-                                            )}
+                                            {dates?.from ? (dates.to ? `${format(dates.from, "dd LLL", {locale: fr})} - ${format(dates.to, "dd LLL", {locale: fr})}` : format(dates.from, "dd LLL")) : "Dates"}
                                         </Button>
                                     </PopoverTrigger>
-                                    <PopoverContent className="w-auto p-0" align="start">
-                                        <CalendarComponent
-                                            initialFocus
-                                            mode="range"
-                                            defaultMonth={dates?.from}
-                                            selected={dates}
-                                            onSelect={setDates}
-                                            numberOfMonths={1}
-                                            locale={fr}
-                                            disabled={{ before: new Date() }}
-                                        />
-                                    </PopoverContent>
+                                    <PopoverContent className="w-auto p-0"><CalendarComponent mode="range" selected={dates} onSelect={setDates} locale={fr} disabled={{ before: new Date() }}/></PopoverContent>
                                 </Popover>
                             </div>
                             <FormField control={form.control} name="fullName" render={({ field }) => (
-                                <FormItem><FormLabel>Nom complet</FormLabel><FormControl><Input placeholder="John Doe" {...field} /></FormControl><FormMessage /></FormItem>
+                                <FormItem><FormLabel>Nom</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                             )}/>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="grid grid-cols-2 gap-4">
                                 <FormField control={form.control} name="email" render={({ field }) => (
-                                    <FormItem><FormLabel>Email</FormLabel><FormControl><Input type="email" placeholder="john.doe@example.com" {...field} /></FormControl><FormMessage /></FormItem>
+                                    <FormItem><FormLabel>Email</FormLabel><FormControl><Input type="email" {...field} /></FormControl><FormMessage /></FormItem>
                                 )}/>
                                 <FormField control={form.control} name="phone" render={({ field }) => (
-                                    <FormItem><FormLabel>Téléphone</FormLabel><FormControl><Input type="tel" placeholder="0555 123 456" {...field} /></FormControl><FormMessage /></FormItem>
+                                    <FormItem><FormLabel>Tél</FormLabel><FormControl><Input type="tel" {...field} /></FormControl><FormMessage /></FormItem>
                                 )}/>
                             </div>
                         </CardContent>
                     </Card>
-
                     <Card>
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <FileText className="h-5 w-5" />
-                                Règlement de la location
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <ul className="list-disc list-inside text-sm text-muted-foreground space-y-2">
-                                <li>Le conducteur principal doit être âgé d'au moins 21 ans.</li>
-                                <li>Un permis de conduire valide depuis au moins 1 an est requis.</li>
-                                <li>La durée de location est calculée par tranches de 24h. Le véhicule doit être restitué à la même heure que celle de la prise en charge.</li>
-                                <li>Le véhicule est fourni avec le plein de carburant et doit être restitué de même.</li>
-                                <li>Une caution pourra vous être demandée à l'agence de location.</li>
-                            </ul>
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Paiement</CardTitle>
-                        </CardHeader>
+                        <CardHeader><CardTitle>Paiement</CardTitle></CardHeader>
                         <CardContent className="space-y-6">
                              <FormField control={form.control} name="paymentMethod" render={({ field }) => (
-                                <FormItem className="space-y-3">
-                                    <FormLabel>Méthode de paiement</FormLabel>
+                                <FormItem>
                                     <FormControl>
-                                    <RadioGroup
-                                        onValueChange={field.onChange}
-                                        defaultValue={field.value}
-                                        className="grid grid-cols-1 md:grid-cols-2 gap-4"
-                                    >
+                                    <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="grid grid-cols-2 gap-4">
                                        {enabledPaymentMethods.map(method => (
-                                            <FormItem key={method.id}>
-                                                <FormControl>
-                                                    <RadioGroupItem value={method.id} id={`car-${method.id}`} className="peer sr-only" />
-                                                </FormControl>
-                                                <Label htmlFor={`car-${method.id}`} className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary">
-                                                    {method.id === 'card' && <CreditCard className="mb-3 h-6 w-6" />}
-                                                    {method.id === 'paypal' && <SiPaypal className="mb-3 h-6 w-6" />}
+                                            <div key={method.id}>
+                                                <RadioGroupItem value={method.id} id={method.id} className="peer sr-only" />
+                                                <Label htmlFor={method.id} className="flex flex-col items-center p-4 border-2 rounded-md peer-data-[state=checked]:border-primary">
+                                                    {method.id === 'card' ? <CreditCard className="h-6 w-6" /> : <SiPaypal className="h-6 w-6" />}
                                                 </Label>
-                                            </FormItem>
+                                            </div>
                                         ))}
                                     </RadioGroup>
                                     </FormControl>
-                                    <FormMessage />
                                 </FormItem>
                             )}/>
-                            
                             {paymentMethod === 'card' && (
-                                <div className="space-y-4 animate-in fade-in-20">
-                                    <FormField control={form.control} name="cardNumber" render={({ field }) => (
-                                        <FormItem><FormLabel>Numéro de carte</FormLabel><FormControl><Input placeholder="•••• •••• •••• ••••" {...field} /></FormControl><FormMessage /></FormItem>
-                                    )}/>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <FormField control={form.control} name="expiryDate" render={({ field }) => (
-                                            <FormItem><FormLabel>Date d'expiration</FormLabel><FormControl><Input placeholder="MM/AA" {...field} /></FormControl><FormMessage /></FormItem>
-                                        )}/>
-                                        <FormField control={form.control} name="cvc" render={({ field }) => (
-                                            <FormItem><FormLabel>CVC</FormLabel><FormControl><Input placeholder="123" {...field} /></FormControl><FormMessage /></FormItem>
-                                        )}/>
+                                <div className="space-y-4">
+                                    <FormField control={form.control} name="cardNumber" render={({ field }) => (<FormItem><FormLabel>N° Carte</FormLabel><Input placeholder="•••• •••• •••• ••••" {...field} /></FormItem>)}/>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <FormField control={form.control} name="expiryDate" render={({ field }) => (<FormItem><FormLabel>MM/AA</FormLabel><Input {...field} /></FormItem>)}/>
+                                        <FormField control={form.control} name="cvc" render={({ field }) => (<FormItem><FormLabel>CVC</FormLabel><Input {...field} /></FormItem>)}/>
                                     </div>
                                 </div>
                             )}
-
-                             <FormField
-                                control={form.control}
-                                name="agreeToTerms"
-                                render={({ field }) => (
-                                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                                    <FormControl>
-                                      <Checkbox checked={field.value} onCheckedChange={field.onChange} id="terms-checkbox"/>
-                                    </FormControl>
-                                    <div className="space-y-1 leading-none">
-                                      <Label htmlFor='terms-checkbox'>
-                                        J'accepte les <Link href="/terms" className="underline hover:text-primary">Conditions d'utilisation</Link> et la <Link href="/privacy" className="underline hover:text-primary">Politique de confidentialité</Link>.
-                                      </Label>
-                                      <FormMessage />
-                                    </div>
+                             <FormField control={form.control} name="agreeToTerms" render={({ field }) => (
+                                  <FormItem className="flex items-start space-x-3 border p-4 rounded-md">
+                                    <Checkbox checked={field.value} onCheckedChange={field.onChange} id="terms"/>
+                                    <Label htmlFor="terms" className="text-sm">J'accepte les conditions.</Label>
                                   </FormItem>
-                                )}
-                              />
+                                )} />
                         </CardContent>
-                         <CardFooter>
-                            <Button type="submit" size="lg" className="w-full">
-                                {`Payer ${formatPrice(totalToPayToday)}`}
-                            </Button>
-                        </CardFooter>
+                        <CardFooter><Button type="submit" size="lg" className="w-full">Payer {formatPrice(totalToPayToday)}</Button></CardFooter>
                     </Card>
                 </form>
             </Form>
         </div>
-
       </div>
     </div>
   );
@@ -454,7 +358,7 @@ function CarBookingForm() {
 
 export default function CarBookingPage() {
     return (
-        <Suspense fallback={<div>Chargement...</div>}>
+        <Suspense fallback={<div className="p-8 text-center">Chargement...</div>}>
             <CarBookingForm />
         </Suspense>
     )
