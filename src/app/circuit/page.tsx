@@ -39,9 +39,8 @@ const bookingSchema = z.object({
     adults: z.coerce.number().min(1, "Il doit y avoir au moins 1 adulte."),
     children: z.coerce.number().min(0),
     infants: z.coerce.number().min(0),
-    paymentMethod: z.enum(['card', 'paypal'], {
-        required_error: "Veuillez sélectionner une méthode de paiement.",
-        invalid_type_error: "Veuillez sélectionner une méthode de paiement.",
+    paymentMethod: z.enum(['card', 'paypal']).refine(val => !!val, {
+        message: "Veuillez sélectionner une méthode de paiement."
     }),
     cardNumber: z.string().optional(),
     expiryDate: z.string().optional(),
