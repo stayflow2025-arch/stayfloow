@@ -123,17 +123,21 @@ function CircuitBookingForm() {
     const allPendingCircuits = [...initialPendingCircuits, ...storedPending];
 
     const formattedPending: any[] = allPendingCircuits
-        .filter(c => c.hasOwnProperty('circuitTitle'))
-        .map(p => ({
+        .map((p: any) => ({
             id: p.id,
-            title: p.circuitTitle,
+            title: p.circuitTitle || p.title || 'Circuit en attente',
             region: p.region,
             duration: 'N/A',
             pricePerPerson: p.pricePerPerson,
             themes: [],
             images: p.images || [`https://picsum.photos/seed/pending-${p.id}/1920/1080`],
             description: 'Aucune description fournie.',
-            guide: { name: p.guideName, avatar: `https://picsum.photos/seed/host-${p.id}/100/100`, email: p.guideEmail, phone: p.guidePhone },
+            guide: { 
+                name: p.guideName || 'Guide', 
+                avatar: `https://picsum.photos/seed/host-${p.id}/100/100`, 
+                email: p.guideEmail || '', 
+                phone: p.guidePhone || '' 
+            },
         }));
 
     const allCircuits = [...initialCircuits, ...approvedCircuits, ...formattedPending];
