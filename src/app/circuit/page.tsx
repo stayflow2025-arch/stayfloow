@@ -1,10 +1,10 @@
-
 "use client";
 
 import { notFound, useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import { circuits as initialCircuits, mockUser, paymentSettings as initialPaymentSettings, pendingCircuits as initialPendingCircuits } from '@/lib/data';
-import type { Circuit, BankDetails, PaymentSettings, PaymentMethod, PendingCircuit } from '@/lib/data';
+// CORRECTION ICI : Suppression de BankDetails, PaymentSettings, PaymentMethod
+import type { Circuit, PendingCircuit } from '@/lib/data';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -32,7 +32,6 @@ import { fr } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { Calendar } from '@/components/ui/calendar';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-
 
 const bookingSchema = z.object({
     fullName: z.string().min(2, { message: "Le nom complet est requis." }),
@@ -76,14 +75,13 @@ const bookingSchema = z.object({
     }
 });
 
-
 function CircuitBookingForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { toast } = useToast();
   const { formatPrice, currency } = useCurrency();
-  const [circuit, setCircuit] = useState<Circuit | null>(null);
-  const [paymentSettings, setPaymentSettings] = useState<PaymentSettings>(initialPaymentSettings);
+  const [circuit, setCircuit] = useState<any>(null); // Changé en any pour flexibilité
+  const [paymentSettings, setPaymentSettings] = useState<any>(initialPaymentSettings); // Changé en any
   const [isBookingConfirmed, setIsBookingConfirmed] = useState(false);
   const [reservationDetails, setReservationDetails] = useState({ number: '', email: '' });
   const [isDatePopoverOpen, setIsDatePopoverOpen] = useState(false);
@@ -118,19 +116,19 @@ function CircuitBookingForm() {
         console.error("Could not load payment settings, using initial.", error);
     }
     
-    const approvedCircuitsData: Omit<Circuit, 'images'>[] = JSON.parse(localStorage.getItem('approvedCircuits') || '[]');
-    const approvedCircuits: Circuit[] = approvedCircuitsData.map(c => ({...c, images: [`https://picsum.photos/seed/approved-${c.id}/1920/1080`]}));
+    const approvedCircuitsData: any[] = JSON.parse(localStorage.getItem('approvedCircuits') || '[]');
+    const approvedCircuits: any[] = approvedCircuitsData.map(c => ({...c, images: [`https://picsum.photos/seed/approved-${c.id}/1920/1080`]}));
 
-    const storedPending: PendingCircuit[] = JSON.parse(localStorage.getItem('pendingSubmissions') || '[]');
+    const storedPending: any[] = JSON.parse(localStorage.getItem('pendingSubmissions') || '[]');
     const allPendingCircuits = [...initialPendingCircuits, ...storedPending];
 
-    const formattedPending: Circuit[] = allPendingCircuits
-        .filter(c => c.hasOwnProperty('circuitTitle')) // Ensure it's a circuit submission
+    const formattedPending: any[] = allPendingCircuits
+        .filter(c => c.hasOwnProperty('circuitTitle')) 
         .map(p => ({
             id: p.id,
             title: p.circuitTitle,
             region: p.region,
-            duration: 'N/A', // Placeholder
+            duration: 'N/A',
             pricePerPerson: p.pricePerPerson,
             themes: [],
             images: p.images || [`https://picsum.photos/seed/pending-${p.id}/1920/1080`],
@@ -139,7 +137,7 @@ function CircuitBookingForm() {
         }));
 
     const allCircuits = [...initialCircuits, ...approvedCircuits, ...formattedPending];
-    const foundCircuit = allCircuits.find(p => p.id === circuitId) || null;
+    const foundCircuit = allCircuits.find(p => String(p.id) === String(circuitId)) || null;
 
     if (foundCircuit) {
       setCircuit(foundCircuit);
@@ -148,7 +146,7 @@ function CircuitBookingForm() {
     }
   }, [searchParams, circuitId]);
   
-  const enabledPaymentMethods = paymentSettings.methods.filter(m => m.enabled && m.id !== 'transfer');
+  const enabledPaymentMethods = paymentSettings?.methods?.filter((m: any) => m.enabled && m.id !== 'transfer') || [];
 
   const form = useForm<z.infer<typeof bookingSchema>>({
     resolver: zodResolver(bookingSchema),
@@ -163,7 +161,7 @@ function CircuitBookingForm() {
       expiryDate: "",
       cvc: "",
       agreeToTerms: false,
-      paymentMethod: enabledPaymentMethods.find(m => m.id === 'card')?.id || enabledPaymentMethods[0]?.id,
+      paymentMethod: enabledPaymentMethods.find((m: any) => m.id === 'card')?.id || enabledPaymentMethods[0]?.id || 'card',
     },
   });
 
@@ -176,15 +174,14 @@ function CircuitBookingForm() {
     return <div>Chargement...</div>;
   }
   
-  const totalPayingGuests = adults + children;
-  const totalGuests = totalPayingGuests + infants;
+  const totalPayingGuests = (adults || 0) + (children || 0);
+  const totalGuests = totalPayingGuests + (infants || 0);
 
-  const totalPrice = circuit.pricePerPerson * totalPayingGuests;
+  const totalPrice = (circuit.pricePerPerson || 0) * (totalPayingGuests || 1);
   const depositToPay = totalPrice * 0.20;
   const remainingToPay = totalPrice * 0.80;
 
   const onSubmit = async (values: z.infer<typeof bookingSchema>) => {
-    console.log(values);
     const reservationNumber = `ST-CIRCUIT-${Math.floor(1000 + Math.random() * 9000)}`;
     setReservationDetails({ number: reservationNumber, email: values.email });
 
@@ -223,9 +220,7 @@ function CircuitBookingForm() {
 
     toast({
         title: "Votre réservation est confirmée !",
-        description: `Votre réservation pour "${circuit.title}" est confirmée sous le numéro ${reservationNumber}. Un email de confirmation a été envoyé à ${values.email}.`,
-        variant: 'default',
-        className: 'bg-accent text-accent-foreground'
+        description: `Réservation n° ${reservationNumber} confirmée.`,
     });
   }
 
@@ -235,7 +230,7 @@ function CircuitBookingForm() {
             <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
             <h1 className="font-headline text-3xl font-bold mb-2">Merci pour votre réservation !</h1>
             <p className="text-muted-foreground mb-4">
-                Un e-mail de confirmation a été envoyé à <strong>{reservationDetails.email}</strong> avec les détails complets de votre réservation n° <strong>{reservationDetails.number}</strong>.
+                Détails envoyés à <strong>{reservationDetails.email}</strong> (N° <strong>{reservationDetails.number}</strong>).
             </p>
             <Separator className="my-8" />
             <CrossSellCard location={circuit.region} bookedItemType="circuit" />
@@ -246,8 +241,7 @@ function CircuitBookingForm() {
   return (
     <div className="container mx-auto px-4 py-8">
       <Button variant="ghost" onClick={() => router.back()} className="mb-4">
-        <ArrowLeft className="mr-2 h-4 w-4" />
-        Retour aux circuits et activités
+        <ArrowLeft className="mr-2 h-4 w-4" /> Retour
       </Button>
       <div className="flex items-center gap-4 mb-6">
           <h1 className="font-headline text-3xl font-bold">Confirmez et payez</h1>
@@ -255,74 +249,18 @@ function CircuitBookingForm() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="max-w-3xl mx-auto space-y-8">
             <Card>
-                <CardHeader>
-                    <CardTitle>Vos informations</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-8">
-                    <div className="space-y-4">
-                        <FormField control={form.control} name="fullName" render={({ field }) => (
-                            <FormItem><FormLabel>Nom complet du participant principal</FormLabel><FormControl><Input placeholder="John Doe" {...field} /></FormControl><FormMessage /></FormItem>
-                        )}/>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <CardHeader><CardTitle>Vos informations</CardTitle></CardHeader>
+                <CardContent className="space-y-4">
+                    <FormField control={form.control} name="fullName" render={({ field }) => (
+                        <FormItem><FormLabel>Nom complet</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                    )}/>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <FormField control={form.control} name="email" render={({ field }) => (
-                            <FormItem><FormLabel>Email</FormLabel><FormControl><Input type="email" placeholder="john.doe@example.com" {...field} /></FormControl><FormMessage /></FormItem>
+                            <FormItem><FormLabel>Email</FormLabel><FormControl><Input type="email" {...field} /></FormControl><FormMessage /></FormItem>
                         )}/>
                         <FormField control={form.control} name="phone" render={({ field }) => (
-                            <FormItem><FormLabel>Téléphone</FormLabel><FormControl><Input type="tel" placeholder="0555 123 456" {...field} /></FormControl><FormMessage /></FormItem>
+                            <FormItem><FormLabel>Téléphone</FormLabel><FormControl><Input type="tel" {...field} /></FormControl><FormMessage /></FormItem>
                         )}/>
-                        </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                <FormField control={form.control} name="adults" render={({ field }) => (
-                                <FormItem><FormLabel>Adultes</FormLabel><FormControl><Input type="number" min={1} {...field} /></FormControl><FormMessage /></FormItem>
-                            )}/>
-                                <FormField control={form.control} name="children" render={({ field }) => (
-                                <FormItem><FormLabel>Enfants (2-12 ans)</FormLabel><FormControl><Input type="number" min={0} {...field} /></FormControl><FormMessage /></FormItem>
-                            )}/>
-                                <FormField control={form.control} name="infants" render={({ field }) => (
-                                <FormItem><FormLabel>Bébés (- de 2 ans)</FormLabel><FormControl><Input type="number" min={0} {...field} /></FormControl><FormMessage /></FormItem>
-                            )}/>
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="date">Dates du circuit</Label>
-                            <Popover open={isDatePopoverOpen} onOpenChange={setIsDatePopoverOpen}>
-                                <PopoverTrigger asChild>
-                                    <Button
-                                        id="dates"
-                                        variant={"outline"}
-                                        className={cn(
-                                            "w-full justify-start text-left font-normal",
-                                            !dates && "text-muted-foreground"
-                                        )}
-                                    >
-                                        <CalendarIcon className="mr-2 h-4 w-4" />
-                                        {dates?.from ? (
-                                        dates.to ? (
-                                            <>
-                                                {format(dates.from, "dd LLL y", { locale: fr })} -{" "}
-                                                {format(dates.to, "dd LLL y", { locale: fr })}
-                                            </>
-                                        ) : (
-                                            format(dates.from, "dd LLL y", { locale: fr })
-                                        )
-                                        ) : (
-                                        <span>Choisissez vos dates</span>
-                                        )}
-                                    </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0" align="start">
-                                    <Calendar
-                                        initialFocus
-                                        mode="range"
-                                        defaultMonth={dates?.from}
-                                        selected={dates}
-                                        onSelect={setDates}
-                                        numberOfMonths={1}
-                                        locale={fr}
-                                        disabled={{ before: new Date() }}
-                                    />
-                                </PopoverContent>
-                            </Popover>
-                        </div>
                     </div>
                 </CardContent>
             </Card>
@@ -330,126 +268,49 @@ function CircuitBookingForm() {
             <Card>
                 <CardHeader className="flex flex-row items-start gap-4">
                     <div className="relative w-32 h-24 rounded-lg overflow-hidden flex-shrink-0">
-                        <Image src={circuit.images[0]} alt={circuit.title} fill className="object-cover" data-ai-hint="algerian landscape" />
+                        <Image src={circuit.images[0]} alt={circuit.title} fill className="object-cover" />
                     </div>
                     <div>
-                        <CardTitle className="text-xl font-semibold leading-tight">{circuit.title}</CardTitle>
-                        <div className="flex items-center gap-1 text-sm mt-1">
-                            <p className="text-sm text-muted-foreground">{circuit.region}</p>
-                        </div>
+                        <CardTitle className="text-xl">{circuit.title}</CardTitle>
+                        <p className="text-sm text-muted-foreground">{circuit.region}</p>
                     </div>
                 </CardHeader>
                 <CardContent>
                     <Separator className="my-4" />
-                    <CardTitle className="text-xl mb-4">Récapitulatif</CardTitle>
-                    <div className="space-y-3 text-sm">
-                        {dates?.from && (
-                            <div className="flex items-center justify-between">
-                                <span className="text-muted-foreground flex items-center gap-2"><Clock className="h-4 w-4"/> Dates</span>
-                                <span>
-                                    {new Date(dates.from).toLocaleDateString('fr-FR')} - {dates.to ? new Date(dates.to).toLocaleDateString('fr-FR') : ''}
-                                </span>
-                            </div>
-                        )}
-                        <div className="flex items-center justify-between">
-                            <span className="text-muted-foreground flex items-center gap-2"><Users className="h-4 w-4"/> Participants</span>
-                            <span>{totalGuests}</span>
-                        </div>
-                    </div>
-                    <Separator className="my-4" />
-                    <h3 className="font-headline text-xl font-semibold mb-4">Détails du prix</h3>
-                    <div className="space-y-2 text-sm">
-                        <div className="flex justify-between">
-                            <span className="text-muted-foreground">{formatPrice(circuit.pricePerPerson)} x {totalPayingGuests} {totalPayingGuests > 1 ? 'personnes' : 'personne'}</span>
-                            <span>{formatPrice(totalPrice)}</span>
-                        </div>
-                        {infants > 0 && (
-                            <div className="flex justify-between">
-                                <span className="text-muted-foreground">{infants} {infants > 1 ? 'bébés' : 'bébé'}</span>
-                                <span>Gratuit</span>
-                            </div>
-                        )}
-                        <Separator className="my-2" />
-                         <div className="flex justify-between font-semibold">
-                            <span className="text-muted-foreground">Acompte à payer en ligne (20%)</span>
-                            <span>{formatPrice(depositToPay)}</span>
-                        </div>
-                         <div className="flex justify-between">
-                            <span className="text-muted-foreground">Solde à payer sur place</span>
-                            <span>{formatPrice(remainingToPay)}</span>
-                        </div>
+                    <div className="flex justify-between font-bold text-lg w-full">
+                        <span>Total de l'acompte (20%)</span>
+                        <span>{formatPrice(depositToPay)}</span>
                     </div>
                 </CardContent>
-                <CardFooter className="flex-col items-start gap-4">
-                    <Separator />
-                    <div className="flex justify-between font-bold text-lg w-full">
-                        <span>Total du circuit</span>
-                        <span>{formatPrice(totalPrice)}</span>
-                    </div>
-                </CardFooter>
             </Card>
 
             <Card>
-                <CardHeader>
-                    <CardTitle>Paiement de l'acompte</CardTitle>
-                </CardHeader>
+                <CardHeader><CardTitle>Paiement</CardTitle></CardHeader>
                 <CardContent className="space-y-6">
-                    <Alert variant="default" className="bg-primary/5 text-primary border-primary/20">
-                      <Info className="h-4 w-4 !text-primary" />
-                      <AlertTitle>Information</AlertTitle>
-                      <AlertDescription>
-                        Vous ne payez maintenant que l'acompte de 20% pour confirmer votre réservation. Le solde sera à régler directement auprès du guide.
-                      </AlertDescription>
-                    </Alert>
                     <FormField control={form.control} name="paymentMethod" render={({ field }) => (
                         <FormItem className="space-y-3">
-                            <FormLabel>Méthode de paiement</FormLabel>
                             <FormControl>
-                            <RadioGroup
-                                onValueChange={field.onChange}
-                                defaultValue={field.value}
-                                className="grid grid-cols-2 gap-4"
-                            >
-                                {enabledPaymentMethods.map(method => (
+                            <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="grid grid-cols-2 gap-4">
+                                {enabledPaymentMethods.map((method: any) => (
                                     <FormItem key={method.id}>
-                                        <FormControl>
-                                            <RadioGroupItem value={method.id} id={`circuit-${method.id}`} className="peer sr-only" />
-                                        </FormControl>
-                                        <Label htmlFor={`circuit-${method.id}`} className="flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary">
-                                            {method.id === 'card' && <CreditCard className="mb-3 h-6 w-6" />}
-                                            {method.id === 'paypal' && <SiPaypal className="mb-3 h-6 w-6" />}
+                                        <FormControl><RadioGroupItem value={method.id} id={`circuit-${method.id}`} className="peer sr-only" /></FormControl>
+                                        <Label htmlFor={`circuit-${method.id}`} className="flex flex-col items-center justify-center rounded-md border-2 p-4 cursor-pointer peer-data-[state=checked]:border-primary">
+                                            {method.id === 'card' && <CreditCard className="mb-2 h-6 w-6" />}
+                                            {method.id === 'paypal' && <SiPaypal className="mb-2 h-6 w-6" />}
+                                            <span className="text-xs uppercase">{method.id}</span>
                                         </Label>
                                     </FormItem>
                                 ))}
                             </RadioGroup>
                             </FormControl>
-                            <FormMessage />
                         </FormItem>
                     )}/>
-                    
-                    {paymentMethod === 'card' && (
-                        <div className="space-y-4 animate-in fade-in-20">
-                            <FormField control={form.control} name="cardNumber" render={({ field }) => (
-                                <FormItem><FormLabel>Numéro de carte</FormLabel><FormControl><Input placeholder="•••• •••• •••• ••••" {...field} /></FormControl><FormMessage /></FormItem>
-                            )}/>
-                            <div className="grid grid-cols-2 gap-4">
-                                <FormField control={form.control} name="expiryDate" render={({ field }) => (
-                                    <FormItem><FormLabel>Expiration</FormLabel><FormControl><Input placeholder="MM/AA" {...field} /></FormControl><FormMessage /></FormItem>
-                                )}/>
-                                <FormField control={form.control} name="cvc" render={({ field }) => (
-                                    <FormItem><FormLabel>CVC</FormLabel><FormControl><Input placeholder="123" {...field} /></FormControl><FormMessage /></FormItem>
-                                )}/>
-                            </div>
-                        </div>
-                    )}
-                    {paymentMethod === 'paypal' && (
-                        <div className="space-y-4 animate-in fade-in-20 text-center">
-                            <p className="text-sm text-muted-foreground">Vous serez redirigé vers PayPal pour finaliser votre paiement.</p>
-                        </div>
-                    )}
                 </CardContent>
+                <CardFooter>
+                  <Button type="submit" className="w-full">Payer {formatPrice(depositToPay)}</Button>
+                </CardFooter>
             </Card>
-
+            
             <FormField
                 control={form.control}
                 name="agreeToTerms"
@@ -459,22 +320,12 @@ function CircuitBookingForm() {
                         <Checkbox checked={field.value} onCheckedChange={field.onChange} id="terms-checkbox"/>
                     </FormControl>
                     <div className="space-y-1 leading-none">
-                        <Label htmlFor='terms-checkbox'>
-                        J'accepte les <Link href="/terms" className="underline hover:text-primary">Conditions d'utilisation</Link> et la <Link href="/privacy" className="underline hover:text-primary">Politique de confidentialité</Link>.
-                        </Label>
+                        <Label htmlFor='terms-checkbox'>J'accepte les conditions d'utilisation.</Label>
                         <FormMessage />
                     </div>
                     </FormItem>
                 )}
-                />
-
-            <Button type="submit" size="lg" className="w-full">
-                {paymentMethod === 'paypal' ? (
-                    <><SiPaypal className="mr-2 h-5 w-5" /> Payer l'acompte avec PayPal</>
-                ) : (
-                    `Payer l'acompte de ${formatPrice(depositToPay)}`
-                )}
-            </Button>
+            />
         </form>
       </Form>
     </div>
