@@ -30,19 +30,28 @@ import { cn } from '@/lib/utils';
 import { Calendar } from '@/components/ui/calendar';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
-// Schéma simplifié avec types explicites pour éviter l'erreur "unknown" de TypeScript
+// Schéma aligné strictement avec BookingFormValues pour éviter l'erreur de build
 const bookingSchema = z.object({
     fullName: z.string().min(2, "Le nom est requis"),
     email: z.string().email("Email invalide"),
     phone: z.string().min(10, "Téléphone invalide"),
-    adults: z.number().min(1),
-    children: z.number().default(0),
-    infants: z.number().default(0),
-    paymentMethod: z.string(),
+    adults: z.number().min(1, "Minimum 1 adulte"),
+    children: z.number().min(0),
+    infants: z.number().min(0),
+    paymentMethod: z.string().min(1, "Méthode requise"),
     agreeToTerms: z.boolean().refine(val => val === true, "Obligatoire"),
 });
 
-type BookingFormValues = z.infer<typeof bookingSchema>;
+type BookingFormValues = {
+  fullName: string;
+  email: string;
+  phone: string;
+  adults: number;
+  children: number;
+  infants: number;
+  paymentMethod: string;
+  agreeToTerms: boolean;
+};
 
 function CircuitBookingForm() {
   const router = useRouter();
@@ -65,7 +74,6 @@ function CircuitBookingForm() {
         const approvedData: any[] = JSON.parse(localStorage.getItem('approvedCircuits') || '[]');
         const storedPending: any[] = JSON.parse(localStorage.getItem('pendingSubmissions') || '[]');
         
-        // Normalisation des données pour éviter les erreurs de propriétés manquantes
         const allPending = [...initialPendingCircuits, ...storedPending].map((p: any) => ({
             id: p.id,
             title: p.circuitTitle || p.title || 'Circuit',
@@ -84,7 +92,7 @@ function CircuitBookingForm() {
         
         if (found) setCircuit(found); else notFound();
     } catch (e) { 
-        console.error("Erreur chargement données:", e); 
+        console.error("Erreur chargement:", e); 
     }
   }, [searchParams]);
 
@@ -102,7 +110,7 @@ function CircuitBookingForm() {
     },
   });
 
-  if (!circuit) return <div className="p-20 text-center">Chargement...</div>;
+  if (!circuit) return null;
 
   const { adults, children, infants, paymentMethod } = form.watch();
   const totalPaying = (Number(adults) || 0) + (Number(children) || 0);
@@ -139,8 +147,8 @@ function CircuitBookingForm() {
     return (
       <div className="container mx-auto px-4 py-20 text-center max-w-2xl">
         <CheckCircle className="h-20 w-20 text-green-500 mx-auto mb-6" />
-        <h1 className="text-3xl font-bold mb-4">Merci pour votre confiance !</h1>
-        <p className="text-muted-foreground mb-8">Votre réservation n°{reservationDetails.number} est validée. Un mail a été envoyé à {reservationDetails.email}.</p>
+        <h1 className="text-3xl font-bold mb-4">Réservation terminée !</h1>
+        <p className="text-muted-foreground mb-8">N° {reservationDetails.number}. Un e-mail a été envoyé à {reservationDetails.email}.</p>
         <CrossSellCard location={circuit.region} bookedItemType="circuit" />
         <Link href="/"><Button className="mt-8">Retour à l'accueil</Button></Link>
       </div>
@@ -156,10 +164,10 @@ function CircuitBookingForm() {
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <Card>
-                <CardHeader><CardTitle>Vos coordonnées</CardTitle></CardHeader>
+                <CardHeader><CardTitle>Informations Voyageurs</CardTitle></CardHeader>
                 <CardContent className="space-y-4">
                   <FormField control={form.control} name="fullName" render={({ field }) => (
-                    <FormItem><FormLabel>Nom Complet</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                    <FormItem><FormLabel>Nom complet</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                   )}/>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormField control={form.control} name="email" render={({ field }) => (
@@ -170,7 +178,7 @@ function CircuitBookingForm() {
                     )}/>
                   </div>
                   <div className="space-y-2">
-                    <Label>Dates souhaitées</Label>
+                    <Label>Dates</Label>
                     <Popover open={isDatePopoverOpen} onOpenChange={setIsDatePopoverOpen}>
                         <PopoverTrigger asChild>
                             <Button variant="outline" className="w-full justify-start font-normal">
@@ -185,16 +193,16 @@ function CircuitBookingForm() {
               </Card>
 
               <Card>
-                <CardHeader><CardTitle>Paiement sécurisé de l'acompte</CardTitle></CardHeader>
+                <CardHeader><CardTitle>Paiement Acompte</CardTitle></CardHeader>
                 <CardContent className="space-y-4">
-                  <Alert className="bg-blue-50 border-blue-200"><Info className="h-4 w-4 text-blue-600" /><AlertTitle className="text-blue-800">Note importante</AlertTitle><AlertDescription className="text-blue-700">Seul l'acompte de 20% ({formatPrice(deposit)}) est prélevé aujourd'hui. Le solde sera réglé sur place.</AlertDescription></Alert>
+                  <Alert className="bg-primary/5 border-primary/20"><Info className="h-4 w-4 text-primary" /><AlertTitle>Acompte de 20%</AlertTitle><AlertDescription>Vous payez uniquement l'acompte aujourd'hui. Le solde est dû au guide sur place.</AlertDescription></Alert>
                   
                   <FormField control={form.control} name="paymentMethod" render={({ field }) => (
                     <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="grid grid-cols-2 gap-4">
                       <div>
                         <RadioGroupItem value="card" id="card" className="peer sr-only" />
                         <Label htmlFor="card" className="flex flex-col items-center p-4 border-2 rounded-xl cursor-pointer peer-data-[state=checked]:border-primary hover:bg-slate-50">
-                          <CreditCard className="mb-2" /> Carte Bancaire
+                          <CreditCard className="mb-2" /> Carte
                         </Label>
                       </div>
                       <div>
@@ -217,31 +225,29 @@ function CircuitBookingForm() {
               </Card>
 
               <FormField control={form.control} name="agreeToTerms" render={({ field }) => (
-                <FormItem className="flex items-start space-x-3 p-4 border rounded-lg bg-slate-50">
+                <FormItem className="flex items-start space-x-3 p-4 border rounded-lg">
                   <FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl>
-                  <div className="leading-none"><Label className="text-sm cursor-pointer">J'accepte les conditions générales de vente et la politique d'annulation.</Label></div>
+                  <Label className="text-sm cursor-pointer">J'accepte les conditions générales de vente.</Label>
                   <FormMessage />
                 </FormItem>
               )}/>
 
-              <Button type="submit" className="w-full h-14 text-lg font-bold">Payer l'acompte ({formatPrice(deposit)})</Button>
+              <Button type="submit" className="w-full h-14 text-lg">Payer {formatPrice(deposit)}</Button>
             </form>
           </Form>
         </div>
 
         <div className="lg:col-span-1">
-          <Card className="sticky top-24 border-primary/20 shadow-lg">
+          <Card className="sticky top-24 shadow-lg">
             <div className="relative h-48 w-full">
-              {circuit.images?.[0] && <Image src={circuit.images[0]} alt={circuit.title} fill className="object-cover rounded-t-xl" />}
+              {circuit.images?.[0] && <Image src={circuit.images[0]} alt="" fill className="object-cover rounded-t-xl" />}
             </div>
-            <CardHeader><CardTitle className="text-xl">{circuit.title}</CardTitle></CardHeader>
+            <CardHeader><CardTitle>{circuit.title}</CardTitle></CardHeader>
             <CardContent className="space-y-4">
               <div className="flex justify-between text-sm"><span>Voyageurs</span><span className="font-bold">{totalPaying + (Number(infants) || 0)}</span></div>
-              <div className="flex justify-between text-sm"><span>Prix par personne</span><span>{formatPrice(circuit.pricePerPerson)}</span></div>
               <Separator />
-              <div className="flex justify-between text-base font-bold text-slate-700"><span>Total Circuit</span><span>{formatPrice(totalPrice)}</span></div>
-              <div className="flex justify-between text-lg font-bold text-primary bg-primary/5 p-2 rounded"><span>À payer ce jour</span><span>{formatPrice(deposit)}</span></div>
-              <p className="text-[10px] text-center text-muted-foreground uppercase tracking-wider">Paiement sécurisé SSL</p>
+              <div className="flex justify-between font-bold"><span>Total Circuit</span><span>{formatPrice(totalPrice)}</span></div>
+              <div className="flex justify-between text-xl font-bold text-primary"><span>Acompte</span><span>{formatPrice(deposit)}</span></div>
             </CardContent>
           </Card>
         </div>
@@ -251,5 +257,5 @@ function CircuitBookingForm() {
 }
 
 export default function CircuitBookingPage() {
-    return <Suspense fallback={<div className="p-20 text-center">Chargement...</div>}><CircuitBookingForm /></Suspense>;
+    return <Suspense fallback={null}><CircuitBookingForm /></Suspense>;
 }
