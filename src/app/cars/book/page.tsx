@@ -142,7 +142,6 @@ function CarBookingForm() {
     if (foundCar) {
       setCar(foundCar);
     }
-    // Suppression du notFound() pour éviter l'erreur pendant le build statique
   }, [searchParams, carId]);
   
   const enabledPaymentMethods = paymentSettings.methods.filter(m => m.enabled && m.id !== 'transfer');
