@@ -39,7 +39,6 @@ const bookingSchema = z.object({
     fullName: z.string().min(2, { message: "Le nom complet est requis." }),
     email: z.string().email({ message: "Adresse email invalide." }),
     phone: z.string().min(10, { message: "Numéro de téléphone invalide." }),
-    // CORRECTION ICI : Suppression de l'errorMap qui faisait planter le build
     paymentMethod: z.enum(['card', 'paypal']),
     cardNumber: z.string().optional(),
     expiryDate: z.string().optional(),
@@ -115,23 +114,20 @@ function CarBookingForm() {
     const storedPending: PendingCar[] = JSON.parse(localStorage.getItem('pendingSubmissions') || '[]');
     const allPendingCars = [...initialPendingCars, ...storedPending];
 
+    // CORRECTION DU MAPPING POUR CLOUDFLARE
     const formattedPending: Car[] = allPendingCars
-      .filter(c => c.hasOwnProperty('carMake'))
-      .map(p => ({
+      .map((p: any) => ({
         id: p.id,
-        make: p.carMake,
-        model: p.carModel,
-        type: p.carType as any,
-        year: new Date().getFullYear(),
-        pricePerDay: p.pricePerDay,
-        location: p.location,
-        transmission: 'Manuelle',
-        fuelType: 'Essence',
-        seats: 5,
-        features: [],
-        images: p.images || [`https://picsum.photos/seed/pending-${p.id}/1200/800`],
-        description: 'Aucune description fournie.',
-        host: { name: p.hostName, avatar: `https://picsum.photos/seed/host-${p.id}/100/100`, email: p.hostEmail, phone: p.hostPhone },
+        brand: p.carMake || p.make || p.brand || "Inconnu",
+        model: p.carModel || p.model || "Modèle",
+        pricePerDay: p.pricePerDay || 0,
+        features: p.features || [],
+        image: Array.isArray(p.images) ? p.images[0] : (p.image || "/placeholder-car.jpg"),
+        // On ajoute les autres champs pour éviter les erreurs de type si Car est strict
+        year: p.year || 2024,
+        location: p.location || "",
+        type: p.carType || p.type || "Citadine",
+        host: p.host || { name: p.hostName || "Hôte" }
     }));
 
     const allCars = [...initialCars, ...approvedCars, ...formattedPending];
@@ -186,11 +182,11 @@ function CarBookingForm() {
         customerName: values.fullName,
         customerEmail: values.email,
         reservationNumber: reservationNumber,
-        itemName: `${car.make} ${car.model}`,
+        itemName: `${car.brand} ${car.model}`,
         itemType: 'véhicule',
-        hostName: car.host.name,
-        hostEmail: car.host.email,
-        hostPhone: car.host.phone,
+        hostName: car.host?.name || "Hôte",
+        hostEmail: car.host?.email || "",
+        hostPhone: car.host?.phone || "",
         bookingDetails: {
             startDate: dates?.from?.toISOString(),
             endDate: dates?.to?.toISOString(),
@@ -199,13 +195,13 @@ function CarBookingForm() {
     });
 
     await sendNewBookingNotificationEmail({
-        partnerName: car.host.name,
-        partnerEmail: car.host.email,
+        partnerName: car.host?.name || "Hôte",
+        partnerEmail: car.host?.email || "",
         customerName: values.fullName,
         customerEmail: values.email,
         customerPhone: values.phone,
         reservationNumber,
-        itemName: `${car.make} ${car.model}`,
+        itemName: `${car.brand} ${car.model}`,
         bookingDetails: {
             startDate: dates?.from?.toISOString(),
             endDate: dates?.to?.toISOString(),
@@ -230,7 +226,7 @@ function CarBookingForm() {
                 Email envoyé à <strong>{reservationDetails.email}</strong> (n° <strong>{reservationDetails.number}</strong>).
             </p>
             <Separator className="my-8" />
-            <CrossSellCard location={car.location} bookedItemType="car" />
+            <CrossSellCard location={car.location || ""} bookedItemType="car" />
         </div>
     )
   }
@@ -245,12 +241,12 @@ function CarBookingForm() {
           <Card className="sticky top-24 shadow-lg">
             <CardHeader className="flex flex-row items-start gap-4">
               <div className="relative w-32 h-24 rounded-lg overflow-hidden flex-shrink-0">
-                  <Image src={car.images[0]} alt={car.model} fill className="object-cover" />
+                  <Image src={car.image} alt={car.model} fill className="object-cover" />
               </div>
               <div>
-                  <p className="text-sm text-muted-foreground">{car.type}</p>
-                  <CardTitle className="text-lg font-semibold">{car.make} {car.model}</CardTitle>
-                  <Badge variant="outline" className="mt-1">{car.year}</Badge>
+                  <p className="text-sm text-muted-foreground">{car.type || "Véhicule"}</p>
+                  <CardTitle className="text-lg font-semibold">{car.brand} {car.model}</CardTitle>
+                  <Badge variant="outline" className="mt-1">{car.year || 2024}</Badge>
               </div>
             </CardHeader>
             <CardContent>
