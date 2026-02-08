@@ -1,4 +1,3 @@
-
 "use client";
 
 import dynamic from 'next/dynamic';
@@ -6,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { MessageSquare } from 'lucide-react';
 
 const CustomerSupportChat = dynamic(
-  () => import('@/components/customer-support-chat').then(mod => mod.CustomerSupportChat),
+  () => import('@/components/customer-support-chat').then(mod => mod.default),
   {
     ssr: false,
     loading: () => (
