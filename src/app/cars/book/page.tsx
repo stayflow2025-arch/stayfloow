@@ -3,7 +3,7 @@
 import { notFound, useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import { cars as initialCars, paymentSettings as initialPaymentSettings, pendingCars as initialPendingCars } from '@/lib/data';
-import type { Car, PaymentSettings, PendingCar } from '@/lib/data';
+import type { Car, PendingCar } from '@/lib/data';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -32,7 +32,6 @@ import { cn } from '@/lib/utils';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 
 // --- AJOUT POUR CLOUDFLARE ---
-// Cette ligne indique à Next.js de ne pas chercher de serveur
 export const dynamic = 'force-static'; 
 // -----------------------------
 
@@ -81,7 +80,7 @@ function CarBookingForm() {
   const { toast } = useToast();
   const { formatPrice } = useCurrency();
   const [car, setCar] = useState<Car | null>(null);
-  const [paymentSettings, setPaymentSettings] = useState<PaymentSettings>(initialPaymentSettings);
+  const [paymentSettings, setPaymentSettings] = useState<any>(initialPaymentSettings);
   const [isBookingConfirmed, setIsBookingConfirmed] = useState(false);
   const [reservationDetails, setReservationDetails] = useState({ number: '', email: '' });
   const [isDatePopoverOpen, setIsDatePopoverOpen] = useState(false);
@@ -144,7 +143,7 @@ function CarBookingForm() {
     }
   }, [searchParams, carId]);
   
-  const enabledPaymentMethods = paymentSettings.methods.filter(m => m.enabled && m.id !== 'transfer');
+  const enabledPaymentMethods = paymentSettings.methods?.filter((m: any) => m.enabled && m.id !== 'transfer') || [];
 
   const form = useForm<z.infer<typeof bookingSchema>>({
     resolver: zodResolver(bookingSchema),
@@ -156,7 +155,7 @@ function CarBookingForm() {
       expiryDate: "",
       cvc: "",
       agreeToTerms: false,
-      paymentMethod: enabledPaymentMethods.find(m => m.id === 'card')?.id || enabledPaymentMethods[0]?.id,
+      paymentMethod: enabledPaymentMethods.find((m: any) => m.id === 'card')?.id || enabledPaymentMethods[0]?.id,
     },
   });
 
@@ -317,7 +316,7 @@ function CarBookingForm() {
                                 <FormItem>
                                     <FormControl>
                                     <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="grid grid-cols-2 gap-4">
-                                       {enabledPaymentMethods.map(method => (
+                                       {enabledPaymentMethods.map((method: any) => (
                                             <div key={method.id}>
                                                 <RadioGroupItem value={method.id} id={method.id} className="peer sr-only" />
                                                 <Label htmlFor={method.id} className="flex flex-col items-center p-4 border-2 rounded-md peer-data-[state=checked]:border-primary">
