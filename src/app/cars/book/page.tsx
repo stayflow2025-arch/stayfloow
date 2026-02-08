@@ -39,9 +39,8 @@ const bookingSchema = z.object({
     fullName: z.string().min(2, { message: "Le nom complet est requis." }),
     email: z.string().email({ message: "Adresse email invalide." }),
     phone: z.string().min(10, { message: "Numéro de téléphone invalide." }),
-    paymentMethod: z.enum(['card', 'paypal'], {
-        errorMap: () => ({ message: "Veuillez sélectionner une méthode de paiement." }),
-    }),
+    // CORRECTION ICI : Suppression de l'errorMap qui faisait planter le build
+    paymentMethod: z.enum(['card', 'paypal']),
     cardNumber: z.string().optional(),
     expiryDate: z.string().optional(),
     cvc: z.string().optional(),
