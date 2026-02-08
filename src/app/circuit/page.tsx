@@ -3,7 +3,6 @@
 import { notFound, useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import { circuits as initialCircuits, mockUser, paymentSettings as initialPaymentSettings, pendingCircuits as initialPendingCircuits } from '@/lib/data';
-// CORRECTION : On ne garde que les types qui existent réellement dans data.ts
 import type { Circuit, PendingCircuit } from '@/lib/data';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -41,7 +40,8 @@ const bookingSchema = z.object({
     children: z.coerce.number().min(0),
     infants: z.coerce.number().min(0),
     paymentMethod: z.enum(['card', 'paypal'], {
-        errorMap: () => ({ message: "Veuillez sélectionner une méthode de paiement." }),
+        required_error: "Veuillez sélectionner une méthode de paiement.",
+        invalid_type_error: "Veuillez sélectionner une méthode de paiement.",
     }),
     cardNumber: z.string().optional(),
     expiryDate: z.string().optional(),
@@ -81,10 +81,8 @@ function CircuitBookingForm() {
   const { toast } = useToast();
   const { formatPrice, currency } = useCurrency();
   
-  // CORRECTION : On utilise any ici pour éviter les erreurs de typage strict lors du build
   const [circuit, setCircuit] = useState<any>(null);
   const [paymentSettings, setPaymentSettings] = useState<any>(initialPaymentSettings);
-  
   const [isBookingConfirmed, setIsBookingConfirmed] = useState(false);
   const [reservationDetails, setReservationDetails] = useState({ number: '', email: '' });
   const [isDatePopoverOpen, setIsDatePopoverOpen] = useState(false);
@@ -180,7 +178,7 @@ function CircuitBookingForm() {
   const totalPayingGuests = Number(adults) + Number(children);
   const totalGuests = totalPayingGuests + Number(infants);
 
-  const totalPrice = (circuit.pricePerPerson || 0) * totalPayingGuests;
+  const totalPrice = (Number(circuit.pricePerPerson) || 0) * totalPayingGuests;
   const depositToPay = totalPrice * 0.20;
   const remainingToPay = totalPrice * 0.80;
 
@@ -196,8 +194,26 @@ function CircuitBookingForm() {
             itemName: circuit.title,
             itemType: 'circuit',
             hostName: circuit.guide?.name || "Stayflow Guide",
+            hostEmail: circuit.guide?.email || "",
+            hostPhone: circuit.guide?.phone || "",
             bookingDetails: {
                 startDate: dates?.from?.toISOString(),
+                endDate: dates?.to?.toISOString(),
+                participants: totalGuests,
+            }
+        });
+
+        await sendNewBookingNotificationEmail({
+            partnerName: circuit.guide?.name || "Stayflow Guide",
+            partnerEmail: circuit.guide?.email || "",
+            customerName: values.fullName,
+            customerEmail: values.email,
+            customerPhone: values.phone,
+            reservationNumber,
+            itemName: circuit.title,
+            bookingDetails: {
+                startDate: dates?.from?.toISOString(),
+                endDate: dates?.to?.toISOString(),
                 participants: totalGuests,
             }
         });
