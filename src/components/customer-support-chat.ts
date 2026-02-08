@@ -27,6 +27,7 @@ export function CustomerSupportChat() {
 
   return (
     <>
+      {/* Bouton flottant */}
       <div
         className={cn(
           "fixed bottom-6 right-6 z-50 transition-transform duration-300 ease-in-out",
@@ -42,6 +43,7 @@ export function CustomerSupportChat() {
         </Button>
       </div>
 
+      {/* Fenêtre de chat */}
       <div
         className={cn(
           "fixed bottom-6 right-6 z-50 w-[calc(100vw-3rem)] max-w-md transition-all duration-300 ease-in-out",
@@ -56,6 +58,7 @@ export function CustomerSupportChat() {
                   <MessageSquare />
                 </AvatarFallback>
               </Avatar>
+
               <div>
                 <CardTitle className="text-base font-semibold">
                   Assistant StayFloow
