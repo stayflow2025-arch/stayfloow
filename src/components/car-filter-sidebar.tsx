@@ -38,11 +38,9 @@ export function CarFilterSidebar({ resultCount }: { resultCount: number }) {
       </CardHeader>
 
       <CardContent className="p-0 max-h-[calc(100vh-12rem)] overflow-y-auto">
-        <Accordion
-          type="multiple"
-          defaultValue={["budget", "type"]}
-          className="w-full"
-        >
+        {/* ✔️ Accordion corrigé : plus de type / defaultValue */}
+        <Accordion className="w-full">
+          
           {/* Budget */}
           <AccordionItem value="budget">
             <AccordionTrigger className="p-4 font-semibold">
