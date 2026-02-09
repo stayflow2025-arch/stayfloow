@@ -1,9 +1,10 @@
-const { withCloudflare } = require("@cloudflare/next-on-pages");
-
 /** @type {import('next').NextConfig} */
-module.exports = withCloudflare({
+const nextConfig = {
   reactStrictMode: false,
   images: {
     unoptimized: true
-  }
-});
+  },
+  output: "standalone"
+};
+
+module.exports = nextConfig;
