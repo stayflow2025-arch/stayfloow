@@ -141,9 +141,8 @@ export function CrossSellCard({
                       >
                         <PopoverTrigger asChild>
                           <Button
-                            variant="outline"
                             className={cn(
-                              "w-full justify-start text-left font-normal mt-1",
+                              "w-full justify-start text-left font-normal mt-1 border border-input bg-background hover:bg-accent hover:text-accent-foreground",
                               !circuitDates && "text-muted-foreground"
                             )}
                           >
