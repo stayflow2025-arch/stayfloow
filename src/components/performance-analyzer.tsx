@@ -4,9 +4,8 @@ console.log("DEBUG: PerformanceAnalyzer loaded");
 
 import React, { useState, useTransition } from "react";
 // ❌ Import supprimé car le module n'existe pas
-// import { analyzeSitePerformance } from "@/ai/flows/site-performance-analysis-flow";
+// import type { SitePerformanceOutput } from "@/ai/types";
 
-import type { SitePerformanceOutput } from "@/ai/types";
 import {
   Card,
   CardContent,
@@ -19,6 +18,18 @@ import { Button } from "@/components/ui/button";
 import { Loader2, Lightbulb, TrendingUp } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { Badge } from "./ui/badge";
+
+/* ------------------------------------------------------------------
+   TYPE LOCAL — remplace "@/ai/types"
+-------------------------------------------------------------------*/
+export type SitePerformanceOutput = {
+  performanceSummary: string;
+  keyObservations: string[];
+  actionableRecommendations: {
+    recommendation: string;
+    priority: "Haute" | "Moyenne" | "Basse";
+  }[];
+};
 
 /* ------------------------------------------------------------------
    MOCK IA FALLBACK — pour éviter l’erreur et garder le composant actif
