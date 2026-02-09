@@ -157,7 +157,8 @@ function CircuitBookingForm() {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-5xl">
-      <Button variant="ghost" onClick={() => router.back()} className="mb-6"><ArrowLeft className="mr-2 h-4 w-4" /> Retour</Button>
+      {/* CORRECTION ICI : Retrait du variant="ghost" qui causait l'erreur */}
+      <Button onClick={() => router.back()} className="mb-6"><ArrowLeft className="mr-2 h-4 w-4" /> Retour</Button>
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">
