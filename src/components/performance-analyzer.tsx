@@ -3,8 +3,6 @@
 console.log("DEBUG: PerformanceAnalyzer loaded");
 
 import React, { useState, useTransition } from "react";
-// ❌ Import supprimé car le module n'existe pas
-// import type { SitePerformanceOutput } from "@/ai/types";
 
 import {
   Card,
@@ -32,7 +30,7 @@ export type SitePerformanceOutput = {
 };
 
 /* ------------------------------------------------------------------
-   MOCK IA FALLBACK — pour éviter l’erreur et garder le composant actif
+   MOCK IA FALLBACK
 -------------------------------------------------------------------*/
 async function analyzeSitePerformance(): Promise<SitePerformanceOutput> {
   console.log("DEBUG: Using fallback analyzeSitePerformance()");
@@ -105,16 +103,19 @@ export function PerformanceAnalyzer() {
     });
   };
 
-  const getPriorityBadgeVariant = (
-    priority: "Haute" | "Moyenne" | "Basse"
-  ) => {
+  /* ------------------------------------------------------------------
+     NOUVELLE VERSION : retourne des classes Tailwind
+  -------------------------------------------------------------------*/
+  const getPriorityBadgeClass = (priority: "Haute" | "Moyenne" | "Basse") => {
     switch (priority) {
       case "Haute":
-        return "destructive";
+        return "bg-red-600 text-white";
       case "Moyenne":
-        return "secondary";
+        return "bg-yellow-400 text-black";
+      case "Basse":
+        return "bg-green-600 text-white";
       default:
-        return "outline";
+        return "bg-gray-300 text-black";
     }
   };
 
@@ -133,7 +134,7 @@ export function PerformanceAnalyzer() {
 
       <CardContent>
         {error && (
-          <Alert variant="destructive" className="mb-4">
+          <Alert className="mb-4 bg-red-600 text-white">
             <AlertTitle>Erreur</AlertTitle>
             <AlertDescription>{error}</AlertDescription>
           </Alert>
@@ -167,7 +168,9 @@ export function PerformanceAnalyzer() {
                   <Card key={i} className="bg-background/70">
                     <CardContent className="p-4 flex items-start justify-between gap-4">
                       <p className="text-sm">{rec.recommendation}</p>
-                      <Badge variant={getPriorityBadgeVariant(rec.priority)}>
+
+                      {/* ✔️ Badge corrigé */}
+                      <Badge className={getPriorityBadgeClass(rec.priority)}>
                         {rec.priority}
                       </Badge>
                     </CardContent>
