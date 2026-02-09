@@ -84,7 +84,7 @@ export function PropertyCard({ property, isGenius = false, viewMode = "grid" }: 
   };
 
   /* ------------------------------------------------------------------
-     LIST VIEW
+      LIST VIEW
   ------------------------------------------------------------------*/
   if (viewMode === "list") {
     return (
@@ -198,7 +198,7 @@ export function PropertyCard({ property, isGenius = false, viewMode = "grid" }: 
   }
 
   /* ------------------------------------------------------------------
-     GRID VIEW
+      GRID VIEW
   ------------------------------------------------------------------*/
   return (
     <Card className="overflow-hidden flex flex-col h-full transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
@@ -276,4 +276,11 @@ export function PropertyCard({ property, isGenius = false, viewMode = "grid" }: 
             </p>
           )}
 
-          <p className={cn("
+          <p className={cn("font-bold text-lg", isGenius && "text-sm text-muted-foreground line-through")}>
+            {formatPrice(property.price)} <span className="text-xs font-normal">/ nuit</span>
+          </p>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
