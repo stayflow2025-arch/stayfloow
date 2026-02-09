@@ -93,9 +93,11 @@ export default function RegisterPage() {
             )}
           />
 
-          <Button type="submit" className="w-full" disabled={loading}>
+          {/* ⭐ Aucun size, aucun variant → Cloudflare OK */}
+          <Button type="submit" className="w-full py-3" disabled={loading}>
             {loading ? "Création..." : "S'inscrire"}
           </Button>
+
         </form>
       </Form>
 
