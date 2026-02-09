@@ -27,7 +27,7 @@ const partnerListings = [
   ...cars.slice(0, 1).map((c) => ({
     ...c,
     itemType: "Véhicule",
-    name: `${c.brand} ${c.model}` // Correction ici
+    name: `${c.brand} ${c.model}`
   }))
 ];
 
@@ -103,7 +103,9 @@ export default function PartnerDashboardPage() {
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
               <span>Vos Annonces</span>
-              <Button variant="outline" size="sm">Gérer les disponibilités</Button>
+              <Button className="text-sm px-3 py-1 border rounded-md">
+                Gérer les disponibilités
+              </Button>
             </CardTitle>
             <CardDescription>Aperçu de vos biens et services listés sur StayFloow.</CardDescription>
           </CardHeader>
@@ -121,7 +123,7 @@ export default function PartnerDashboardPage() {
                   <TableRow key={listing.id}>
                     <TableCell className="font-medium">{listing.name}</TableCell>
                     <TableCell>
-                      <Badge variant="outline" className="flex items-center gap-1 w-fit">
+                      <Badge className="flex items-center gap-1 w-fit border px-2 py-1">
                         {listing.itemType === "Hébergement" && <Building className="h-3 w-3" />}
                         {listing.itemType === "Véhicule" && <CarIcon className="h-3 w-3" />}
                         {listing.itemType === "Circuit" && <Compass className="h-3 w-3" />}
@@ -148,7 +150,9 @@ export default function PartnerDashboardPage() {
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
               <span>Réservations Récentes</span>
-              <Button variant="outline" size="sm">Voir tout</Button>
+              <Button className="text-sm px-3 py-1 border rounded-md">
+                Voir tout
+              </Button>
             </CardTitle>
             <CardDescription>Vos dernières réservations et les conversations associées.</CardDescription>
           </CardHeader>
@@ -162,7 +166,7 @@ export default function PartnerDashboardPage() {
                       {booking.customer.name} - {booking.dates}
                     </p>
                   </div>
-                  <Button variant="ghost" size="icon">
+                  <Button className="p-2 rounded-md">
                     <MessageSquare className="h-5 w-5 text-primary" />
                   </Button>
                 </div>
