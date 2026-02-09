@@ -28,7 +28,7 @@ export default function BookCarPage() {
   return (
     <div className="container mx-auto px-4 py-8">
 
-      {/* BOUTON RETOUR — corrigé */}
+      {/* BOUTON RETOUR */}
       <Button onClick={() => router.back()} className="mb-4">
         <ArrowLeft className="mr-2 h-4 w-4" /> Retour
       </Button>
@@ -40,7 +40,7 @@ export default function BookCarPage() {
 
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="outline" className="w-full justify-start text-left font-normal">
+                <Button className="w-full justify-start text-left font-normal">
                   {date?.from ? (
                     date.to ? (
                       <>
