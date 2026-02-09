@@ -1,22 +1,14 @@
-// src/ai/flows/price-recommendation-flow.ts
-
 console.log("DEBUG: price-recommendation-flow loaded");
 
-/* ------------------------------------------------------------------
-   TYPE LOCAL — utilisé par price-recommender.tsx
--------------------------------------------------------------------*/
 export type PriceRecommendationOutput = {
   recommendedPrice: number;
-  confidence: number; // 0–100
+  confidence: number;
   reasoning: string[];
   marketFactors: string[];
 };
 
-/* ------------------------------------------------------------------
-   MOCK IA — version stable, build-safe, Cloudflare-safe
--------------------------------------------------------------------*/
 export async function getPriceRecommendation(property: {
-  name: string;        // <-- corrigé
+  name: string;
   location: string;
   price: number;
   rooms?: number;
