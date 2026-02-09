@@ -36,6 +36,18 @@ export const propertyTypes = [
   'Appartement','Maison','Villa','Studio','Hôtel','Riad'
 ];
 
+/* ============================================================
+   ⭐ AJOUT MANQUANT : POPULAR FILTERS
+   ============================================================ */
+
+export const popularFilters = [
+  "Annulation gratuite",
+  "Petit-déjeuner inclus",
+  "Parking gratuit",
+  "Climatisation",
+  "Wi-Fi gratuit"
+];
+
 export const houseAndVillaRoomTypes = [
   '1 Chambre','2 Chambres','3 Chambres','4 Chambres et plus',
   'Cuisine','Salon','Salle à manger','1 Salle de bain','2 Salles de bain ou plus'
