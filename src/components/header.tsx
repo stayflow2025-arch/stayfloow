@@ -139,7 +139,16 @@ export function Header() {
                 </Button>
               </SheetTrigger>
 
-              <SheetContent side="left">
+              {/* FIX : plus de side="left" */}
+              <SheetContent
+                className="
+                  w-80 sm:w-96
+                  data-[state=open]:animate-in
+                  data-[state=open]:slide-in-from-left
+                  data-[state=closed]:animate-out
+                  data-[state=closed]:slide-out-to-left
+                "
+              >
                 <div className="flex flex-col h-full">
                   <div className="p-4 border-b">
                     <Link
