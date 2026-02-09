@@ -84,11 +84,11 @@ export const egyptianCities = [
 export const allCities = [...algerianCities, ...egyptianCities].sort();
 
 export const cityCoordinates: Record<string,{lat:number;lon:number}> = {
-  // ... (inchangé)
+  // inchangé
 };
 
 /* ============================================================
-   CIRCUIT FILTERS (AJOUTÉS POUR RÉPARER circuit-filter-sidebar)
+   CIRCUIT FILTERS
    ============================================================ */
 
 export const circuitThemes = [
@@ -149,10 +149,13 @@ export type Property = {
   nearbyAttractions?: NearbyAttraction[];
   checkIn?: string;
   checkOut?: string;
+
+  /* ⭐️ AJOUT POUR L’IA DE PRIX */
+  demandScore?: number;
 };
 
 export const properties: Property[] = [
-  // ... (inchangé)
+  // inchangé
 ];
 
 /* ============================================================
@@ -169,7 +172,7 @@ export type Car = {
 };
 
 export const cars: Car[] = [
-  // ... (inchangé)
+  // inchangé
 ];
 
 /* ============================================================
