@@ -2,12 +2,9 @@
 
 console.log("DEBUG: Providers loaded");
 
-import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 import { CurrencyProvider } from "@/context/currency-context";
 import { LanguageProvider } from "@/context/language-context";
 import React, { useEffect, useState } from "react";
-
-const PAYPAL_CLIENT_ID = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "test";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   console.log("DEBUG: Rendering Providers");
@@ -23,14 +20,10 @@ export function Providers({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <PayPalScriptProvider
-      options={{ clientId: PAYPAL_CLIENT_ID, currency: "EUR" }}
-    >
-      <LanguageProvider>
-        <CurrencyProvider>
-          {children}
-        </CurrencyProvider>
-      </LanguageProvider>
-    </PayPalScriptProvider>
+    <LanguageProvider>
+      <CurrencyProvider>
+        {children}
+      </CurrencyProvider>
+    </LanguageProvider>
   );
 }
