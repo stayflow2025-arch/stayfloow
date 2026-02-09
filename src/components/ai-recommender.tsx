@@ -19,7 +19,6 @@ import { Switch } from "@/components/ui/switch";
 import { Loader2, Sparkles } from "lucide-react";
 
 export function AiRecommender() {
-  // Protection SSR : si Next tente de pré-rendre → on renvoie null
   if (typeof window === "undefined") {
     console.log("DEBUG: AiRecommender SSR render skipped");
     return null;
@@ -55,7 +54,6 @@ export function AiRecommender() {
         return;
       }
 
-      // Convertir en string pour éviter React 306
       setResult(
         typeof response.accommodations === "string"
           ? response.accommodations
@@ -106,7 +104,12 @@ export function AiRecommender() {
           </div>
 
           <div className="text-center">
-            <Button type="submit" disabled={isPending} size="lg">
+            {/* ⭐ Correction : suppression de size="lg" */}
+            <Button
+              type="submit"
+              disabled={isPending}
+              className="px-6 py-3 text-base"
+            >
               {isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
