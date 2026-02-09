@@ -17,14 +17,8 @@ const signupSchema = z.object({
   password: z.string().min(8, "Le mot de passe doit contenir au moins 8 caractères."),
 });
 
-import { redirect } from 'next/navigation';
-
-/**
- * This page redirects to the main registration page.
- * It's kept for legacy links and to avoid 404 errors.
- */
 export default function SignupPage() {
-    const { toast } = useToast();
+  const { toast } = useToast();
   const router = useRouter();
 
   const form = useForm<z.infer<typeof signupSchema>>({
@@ -38,46 +32,73 @@ export default function SignupPage() {
 
   function onSubmit(values: z.infer<typeof signupSchema>) {
     console.log(values);
-    // TODO: Implement actual signup logic
+
     toast({
       title: "Compte créé !",
       description: "Bienvenue sur StayFloow ! Vous pouvez maintenant vous connecter.",
     });
+
     router.push('/login');
   }
 
   return (
     <div className="container mx-auto px-4 py-12 flex items-center justify-center min-h-[70vh]">
-        <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle className="font-headline text-3xl">Créer un compte</CardTitle>
-            <CardDescription>Rejoignez notre communauté de voyageurs.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <FormField control={form.control} name="fullName" render={({ field }) => (
-                  <FormItem><FormLabel>Nom complet</FormLabel><FormControl><Input placeholder="John Doe" {...field} /></FormControl><FormMessage /></FormItem>
-                )} />
-                <FormField control={form.control} name="email" render={({ field }) => (
-                  <FormItem><FormLabel>Email</FormLabel><FormControl><Input type="email" placeholder="votre@email.com" {...field} /></FormControl><FormMessage /></FormItem>
-                )} />
-                <FormField control={form.control} name="password" render={({ field }) => (
-                  <FormItem><FormLabel>Mot de passe</FormLabel><FormControl><Input type="password" placeholder="********" {...field} /></FormControl><FormMessage /></FormItem>
-                )} />
-                <Button type="submit" size="lg" className="w-full">S'inscrire</Button>
-              </form>
-            </Form>
-             <p className="text-center text-sm text-muted-foreground mt-6">
-                Déjà un compte ?{" "}
-                <Link href="/login" className="font-semibold text-primary hover:underline">
-                    Connectez-vous
-                </Link>
-            </p>
-          </CardContent>
-        </Card>
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <CardTitle className="font-headline text-3xl">Créer un compte</CardTitle>
+          <CardDescription>Rejoignez notre communauté de voyageurs.</CardDescription>
+        </CardHeader>
+
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+
+              <FormField control={form.control} name="fullName" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Nom complet</FormLabel>
+                  <FormControl>
+                    <Input placeholder="John Doe" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+
+              <FormField control={form.control} name="email" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input type="email" placeholder="votre@email.com" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+
+              <FormField control={form.control} name="password" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Mot de passe</FormLabel>
+                  <FormControl>
+                    <Input type="password" placeholder="********" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+
+              {/* ⭐ Correction : suppression de size="lg" */}
+              <Button type="submit" className="w-full py-3 text-base">
+                S'inscrire
+              </Button>
+
+            </form>
+          </Form>
+
+          <p className="text-center text-sm text-muted-foreground mt-6">
+            Déjà un compte ?{" "}
+            <Link href="/login" className="font-semibold text-primary hover:underline">
+              Connectez-vous
+            </Link>
+          </p>
+        </CardContent>
+      </Card>
     </div>
   );
-redirect('/auth/register');
-  return null; 
 }
