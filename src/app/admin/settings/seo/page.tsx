@@ -51,7 +51,6 @@ export default function SeoOptimizerPage() {
     setIsPending(true);
     setError(null);
 
-    // Simulation d'un appel API (à remplacer par ton service Firebase ou AI)
     try {
       setTimeout(() => {
         setResult({
@@ -77,7 +76,7 @@ export default function SeoOptimizerPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Formulaire de configuration */}
+        {/* Formulaire */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -88,6 +87,7 @@ export default function SeoOptimizerPage() {
               Remplissez les informations pour obtenir des suggestions.
             </CardDescription>
           </CardHeader>
+
           <form onSubmit={handleSubmit}>
             <CardContent className="space-y-4">
               <div className="space-y-2">
@@ -129,6 +129,7 @@ export default function SeoOptimizerPage() {
                 </Select>
               </div>
             </CardContent>
+
             <CardFooter>
               <Button type="submit" className="w-full" disabled={isPending}>
                 {isPending ? (
@@ -165,6 +166,7 @@ export default function SeoOptimizerPage() {
                   Suggestions SEO
                 </CardTitle>
               </CardHeader>
+
               <CardContent className="space-y-4">
                 <div className="p-3 bg-white border rounded-md shadow-sm">
                   <p className="text-xs font-bold text-blue-600 truncate mb-1">
@@ -185,9 +187,10 @@ export default function SeoOptimizerPage() {
                   <Label className="flex items-center gap-1">
                     <Key className="h-3 w-3" /> Mots-clés suggérés
                   </Label>
+
                   <div className="flex flex-wrap gap-2">
                     {result.keywords.map((kw: string, i: number) => (
-                      <Badge key={i} variant="secondary">{kw}</Badge>
+                      <Badge key={i}>{kw}</Badge>
                     ))}
                   </div>
                 </div>
