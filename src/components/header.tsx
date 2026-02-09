@@ -27,14 +27,13 @@ export function Header() {
 
   const { t } = useLanguage();
 
-  // Protection SSR : éviter mismatch si le contexte change entre serveur et client
   const [isClient, setIsClient] = useState(false);
   useEffect(() => {
     setIsClient(true);
   }, []);
 
   const [isSheetOpen, setIsSheetOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(true); // Mock login state
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
 
   const navLinks = [
     { href: "/search", label: t("accommodations") },
@@ -43,7 +42,6 @@ export function Header() {
     { href: "/partner/onboarding", label: t("become_partner") },
   ];
 
-  // Empêche un rendu différent entre serveur et client
   if (!isClient) {
     return (
       <header className="sticky top-0 z-50 w-full border-b bg-card shadow-sm h-16" />
@@ -79,10 +77,7 @@ export function Header() {
             {isLoggedIn ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    className="relative h-10 w-10 rounded-full"
-                  >
+                  <Button className="relative h-10 w-10 rounded-full bg-transparent hover:bg-accent flex items-center justify-center">
                     <Avatar>
                       <AvatarImage
                         src="https://picsum.photos/seed/user-fatiha/100/100"
@@ -123,7 +118,9 @@ export function Header() {
             ) : (
               <>
                 <Link href="/login" passHref>
-                  <Button variant="ghost">{t("login")}</Button>
+                  <Button className="bg-transparent hover:bg-accent">
+                    {t("login")}
+                  </Button>
                 </Link>
                 <Link href="/signup" passHref>
                   <Button>{t("signup")}</Button>
@@ -136,7 +133,7 @@ export function Header() {
           <div className="md:hidden">
             <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
               <SheetTrigger asChild>
-                <Button variant="outline" size="icon">
+                <Button className="h-10 w-10 flex items-center justify-center border rounded-md bg-transparent hover:bg-accent">
                   <Menu className="h-6 w-6" />
                   <span className="sr-only">{t("open_menu")}</span>
                 </Button>
@@ -183,8 +180,7 @@ export function Header() {
                   <div className="mt-auto p-4 border-t space-y-2">
                     {isLoggedIn ? (
                       <Button
-                        className="w-full"
-                        variant="outline"
+                        className="w-full border bg-transparent hover:bg-accent"
                         onClick={() => {
                           setIsLoggedIn(false);
                           setIsSheetOpen(false);
@@ -200,7 +196,7 @@ export function Header() {
                           className="block"
                           onClick={() => setIsSheetOpen(false)}
                         >
-                          <Button variant="outline" className="w-full">
+                          <Button className="w-full border bg-transparent hover:bg-accent">
                             {t("login")}
                           </Button>
                         </Link>
