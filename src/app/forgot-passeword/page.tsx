@@ -32,11 +32,11 @@ export default function ForgotPasswordPage() {
     setIsSending(true);
 
     try {
-        await sendPasswordResetEmail({ userEmail: values.email, userType: 'customer' });
+      await sendPasswordResetEmail({ userEmail: values.email, userType: 'customer' });
     } catch (e) {
-        console.error("Password reset email failed to send:", e);
+      console.error("Password reset email failed to send:", e);
     }
-    
+
     toast({
       title: "Email envoyé !",
       description: "Si un compte existe pour cet email, vous recevrez un lien pour réinitialiser votre mot de passe.",
@@ -48,41 +48,56 @@ export default function ForgotPasswordPage() {
 
   return (
     <div className="container mx-auto px-4 py-12 flex items-center justify-center min-h-[70vh]">
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
-             <div className="mx-auto bg-primary/10 p-3 rounded-full w-fit mb-2">
-                <KeyRound className="h-8 w-8 text-primary" />
-            </div>
-            <CardTitle className="font-headline text-3xl">Mot de passe oublié</CardTitle>
-            <CardDescription>Saisissez votre email pour recevoir un lien de réinitialisation.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <FormField control={form.control} name="email" render={({ field }) => (
-                  <FormItem><FormLabel>Email</FormLabel><FormControl><Input type="email" placeholder="votre@email.com" {...field} /></FormControl><FormMessage /></FormItem>
-                )} />
-                
-                {/* CORRECTION ICI : Remplacement de size="lg" par h-11 px-8 */}
-                <Button 
-                  type="submit" 
-                  className="w-full h-11 px-8" 
-                  disabled={isSending}
-                >
-                    {isSending ? (
-                        <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Envoi...</>
-                    ) : "Envoyer le lien"}
-                </Button>
-              </form>
-            </Form>
-            <p className="text-center text-sm text-muted-foreground mt-6">
-                Retour à la {" "}
-                <Link href="/auth/login" className="font-semibold text-primary hover:underline">
-                    page de connexion
-                </Link>
-            </p>
-          </CardContent>
-        </Card>
+      <Card className="w-full max-w-md">
+        <CardHeader className="text-center">
+          <div className="mx-auto bg-primary/10 p-3 rounded-full w-fit mb-2">
+            <KeyRound className="h-8 w-8 text-primary" />
+          </div>
+          <CardTitle className="font-headline text-3xl">Mot de passe oublié</CardTitle>
+          <CardDescription>Saisissez votre email pour recevoir un lien de réinitialisation.</CardDescription>
+        </CardHeader>
+
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+
+              <FormField control={form.control} name="email" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input type="email" placeholder="votre@email.com" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+
+              {/* ⭐ Correction finale : aucun size, aucun variant */}
+              <Button 
+                type="submit"
+                className="w-full h-11 px-8 flex items-center justify-center"
+                disabled={isSending}
+              >
+                {isSending ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Envoi...
+                  </>
+                ) : (
+                  "Envoyer le lien"
+                )}
+              </Button>
+
+            </form>
+          </Form>
+
+          <p className="text-center text-sm text-muted-foreground mt-6">
+            Retour à la{" "}
+            <Link href="/auth/login" className="font-semibold text-primary hover:underline">
+              page de connexion
+            </Link>
+          </p>
+        </CardContent>
+      </Card>
     </div>
   );
 }
