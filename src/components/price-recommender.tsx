@@ -65,7 +65,7 @@ export function PriceRecommender({ property }: { property: Property }) {
 
       <CardContent>
         {error && (
-          <Alert variant="destructive" className="mb-4">
+          <Alert className="mb-4 bg-red-600 text-white">
             <AlertTitle>Erreur</AlertTitle>
             <AlertDescription>{error}</AlertDescription>
           </Alert>
@@ -82,7 +82,11 @@ export function PriceRecommender({ property }: { property: Property }) {
 
             <div>
               <h4 className="font-semibold mb-2 text-lg">Confiance</h4>
-              <Badge variant="secondary">{result.confidence}%</Badge>
+
+              {/* ✔️ Badge corrigé */}
+              <Badge className="bg-secondary text-secondary-foreground">
+                {result.confidence}%
+              </Badge>
             </div>
 
             <div>
