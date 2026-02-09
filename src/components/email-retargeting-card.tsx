@@ -23,9 +23,12 @@ export function EmailRetargetingCard() {
       </CardHeader>
 
       <CardContent className="space-y-4">
-        <p className="text-sm opacity-80">{t("email_retargeting_description")}</p>
+        <p className="text-sm opacity-80">
+          {t("email_retargeting_description")}
+        </p>
 
-        <Button size="lg" className="w-full">
+        {/* Correction : suppression de size="lg" */}
+        <Button className="w-full py-3 text-base">
           {t("email_retargeting_cta")}
         </Button>
       </CardContent>
