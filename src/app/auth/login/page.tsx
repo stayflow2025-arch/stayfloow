@@ -52,19 +52,17 @@ export default function LoginPage() {
             control={form.control}
             name="email"
             render={({ field }) => (
-              <>
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="email"
-                      placeholder="votre@email.com"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              </>
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input
+                    type="email"
+                    placeholder="votre@email.com"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
             )}
           />
 
@@ -73,25 +71,25 @@ export default function LoginPage() {
             control={form.control}
             name="password"
             render={({ field }) => (
-              <>
-                <FormItem>
-                  <FormLabel>Mot de passe</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="password"
-                      placeholder="••••••••"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              </>
+              <FormItem>
+                <FormLabel>Mot de passe</FormLabel>
+                <FormControl>
+                  <Input
+                    type="password"
+                    placeholder="••••••••"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
             )}
           />
 
-          <Button type="submit" disabled={loading} className="w-full">
+          {/* ⭐ Aucun size, aucun variant → Cloudflare OK */}
+          <Button type="submit" disabled={loading} className="w-full py-3">
             {loading ? "Connexion..." : "Se connecter"}
           </Button>
+
         </form>
       </Form>
     </div>
