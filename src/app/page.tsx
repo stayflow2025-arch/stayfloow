@@ -113,7 +113,11 @@ export default function Home() {
 
         <div className="text-center mt-8">
           <Link href="/search">
-            <Button size="lg" variant="outline">
+            {/* CORRECTION : Remplacement de size="lg" et variant="outline" par des classes Tailwind */}
+            <Button 
+              type="button" 
+              className="h-12 px-8 border border-input bg-background hover:bg-accent hover:text-accent-foreground rounded-md transition-colors"
+            >
               {t('view_all_accommodations') || 'Tout voir'}
             </Button>
           </Link>
