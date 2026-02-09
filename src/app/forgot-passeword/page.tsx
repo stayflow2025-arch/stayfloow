@@ -37,7 +37,6 @@ export default function ForgotPasswordPage() {
         console.error("Password reset email failed to send:", e);
     }
     
-    // For security, always show the same success message
     toast({
       title: "Email envoyé !",
       description: "Si un compte existe pour cet email, vous recevrez un lien pour réinitialiser votre mot de passe.",
@@ -63,7 +62,13 @@ export default function ForgotPasswordPage() {
                 <FormField control={form.control} name="email" render={({ field }) => (
                   <FormItem><FormLabel>Email</FormLabel><FormControl><Input type="email" placeholder="votre@email.com" {...field} /></FormControl><FormMessage /></FormItem>
                 )} />
-                <Button type="submit" size="lg" className="w-full" disabled={isSending}>
+                
+                {/* CORRECTION ICI : Remplacement de size="lg" par h-11 px-8 */}
+                <Button 
+                  type="submit" 
+                  className="w-full h-11 px-8" 
+                  disabled={isSending}
+                >
                     {isSending ? (
                         <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Envoi...</>
                     ) : "Envoyer le lien"}
@@ -81,5 +86,3 @@ export default function ForgotPasswordPage() {
     </div>
   );
 }
-
-    
