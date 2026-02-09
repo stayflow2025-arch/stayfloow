@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -27,16 +26,15 @@ export function Footer() {
   const [socialLinks, setSocialLinks] = useState<SocialLinks | null>(null);
 
   useEffect(() => {
-    // Ensure this runs only on the client
     if (typeof window !== 'undefined') {
-        try {
-            const savedLinks = localStorage.getItem('socialMediaSettings');
-            if (savedLinks) {
-                setSocialLinks(JSON.parse(savedLinks));
-            }
-        } catch (error) {
-            console.error("Could not load social media links from localStorage", error);
+      try {
+        const savedLinks = localStorage.getItem('socialMediaSettings');
+        if (savedLinks) {
+          setSocialLinks(JSON.parse(savedLinks));
         }
+      } catch (error) {
+        console.error("Could not load social media links from localStorage", error);
+      }
     }
   }, []);
 
@@ -47,14 +45,13 @@ export function Footer() {
   const handleLocaleChange = (newLocale: Locale) => {
     setLocale(newLocale);
   };
-  
-  const currencies: Currency[] = ['DZD', 'EUR', 'USD', 'GBP', 'CHF', 'EGP'];
 
+  const currencies: Currency[] = ['DZD', 'EUR', 'USD', 'GBP', 'CHF', 'EGP'];
 
   return (
     <footer className="border-t bg-card">
-       {!isAdminPage && (
-         <section className="bg-primary py-16">
+      {!isAdminPage && (
+        <section className="bg-primary py-16">
           <div className="container mx-auto px-4 text-center">
             <h2 className="text-3xl font-headline font-bold mb-4 text-primary-foreground">{t('partner_cta_title')}</h2>
             <p className="max-w-3xl mx-auto mb-8 text-primary-foreground/90">
@@ -81,7 +78,8 @@ export function Footer() {
             </DropdownMenu>
           </div>
         </section>
-       )}
+      )}
+
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
           <div className="flex flex-col gap-4 col-span-2 md:col-span-1">
@@ -92,7 +90,8 @@ export function Footer() {
             <p className="text-sm text-muted-foreground">
               {t('footer_tagline')}
             </p>
-             {socialLinks && (socialLinks.instagram || socialLinks.facebook || socialLinks.tiktok) && (
+
+            {socialLinks && (socialLinks.instagram || socialLinks.facebook || socialLinks.tiktok) && (
               <div className="flex items-center gap-4 mt-2">
                 {socialLinks.instagram && (
                   <a href={socialLinks.instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram">
@@ -112,23 +111,26 @@ export function Footer() {
               </div>
             )}
           </div>
+
           <div>
             <h4 className="font-semibold mb-3">{t('navigation')}</h4>
             <ul className="space-y-2 text-sm">
               <li><Link href="/search" className="text-muted-foreground hover:text-foreground">{t('accommodations')}</Link></li>
               <li><Link href="/cars" className="text-muted-foreground hover:text-foreground">{t('car_rental')}</Link></li>
-               <li><Link href="/circuits" className="text-muted-foreground hover:text-foreground">{t('tours')}</Link></li>
+              <li><Link href="/circuits" className="text-muted-foreground hover:text-foreground">{t('tours')}</Link></li>
             </ul>
           </div>
+
           <div>
             <h4 className="font-semibold mb-3">{t('company')}</h4>
             <ul className="space-y-2 text-sm">
-               <li><Link href="/about" className="text-muted-foreground hover:text-foreground">{t('about')}</Link></li>
+              <li><Link href="/about" className="text-muted-foreground hover:text-foreground">{t('about')}</Link></li>
               <li><Link href="/contact" className="text-muted-foreground hover:text-foreground">{t('contact')}</Link></li>
               <li><Link href="/admin/login" className="text-muted-foreground hover:text-foreground">Admin</Link></li>
             </ul>
           </div>
-           <div>
+
+          <div>
             <h4 className="font-semibold mb-3">{t('legal')}</h4>
             <ul className="space-y-2 text-sm">
               <li><Link href="/partner/login" className="text-muted-foreground hover:text-foreground">Espace Partenaire</Link></li>
@@ -137,47 +139,54 @@ export function Footer() {
             </ul>
           </div>
         </div>
+
         <div className="border-t mt-8 pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-sm text-muted-foreground">&copy; {new Date().getFullYear()} StayFloow. {t('rights_reserved')}</p>
-            <div className="flex items-center gap-4">
-              <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost">
-                      <span className="text-lg mr-2">{getLocaleDetails().flag}</span>
-                      {getLocaleDetails().name}
-                      <ChevronDown className="ml-2 h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    {availableLocales.map((loc) => {
-                        const details = getLocaleDetails(loc);
-                        return (
-                            <DropdownMenuItem key={loc} onSelect={() => handleLocaleChange(loc)}>
-                                <span className="mr-3 text-lg">{details.flag}</span>
-                                <span>{details.name}</span>
-                            </DropdownMenuItem>
-                        )
-                    })}
-                  </DropdownMenuContent>
-              </DropdownMenu>
-               <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost">
-                      <span className="text-lg mr-2">{getCurrencyFlag(currency)}</span>
-                      {currency}
-                      <ChevronDown className="ml-2 h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    {currencies.map((c) => (
-                        <DropdownMenuItem key={c} onSelect={() => handleCurrencyChange(c)}>
-                            <span className="mr-3 text-lg">{getCurrencyFlag(c)}</span>
-                            <span>{c} ({getCurrencySymbol(c)})</span>
-                        </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+          <p className="text-sm text-muted-foreground">&copy; {new Date().getFullYear()} StayFloow. {t('rights_reserved')}</p>
+
+          <div className="flex items-center gap-4">
+            {/* LANGUE */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost">
+                  <span className="text-lg mr-2">{getLocaleDetails().flag}</span>
+                  {getLocaleDetails().name}
+                  <ChevronDown className="ml-2 h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+
+              <DropdownMenuContent>
+                {availableLocales.map((loc) => {
+                  const details = getLocaleDetails(loc);
+                  return (
+                    <DropdownMenuItem key={loc} onSelect={() => handleLocaleChange(loc)}>
+                      <span className="mr-3 text-lg">{details.flag}</span>
+                      <span>{details.name}</span>
+                    </DropdownMenuItem>
+                  );
+                })}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* DEVISE */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost">
+                  <span className="text-lg mr-2">{getCurrencyFlag(currency as Currency)}</span>
+                  {currency}
+                  <ChevronDown className="ml-2 h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+
+              <DropdownMenuContent>
+                {currencies.map((c) => (
+                  <DropdownMenuItem key={c} onSelect={() => handleCurrencyChange(c)}>
+                    <span className="mr-3 text-lg">{getCurrencyFlag(c)}</span>
+                    <span>{c} ({getCurrencySymbol(c)})</span>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </div>
     </footer>
