@@ -25,7 +25,6 @@ function ResetPasswordForm() {
   const searchParams = useSearchParams();
   const { toast } = useToast();
 
-  // In a real app, this token would be validated against a database.
   const token = searchParams.get('token');
 
   const form = useForm<z.infer<typeof resetPasswordSchema>>({
@@ -38,21 +37,21 @@ function ResetPasswordForm() {
 
   function onSubmit(values: z.infer<typeof resetPasswordSchema>) {
     if (!token) {
-        toast({
-            title: "Jeton invalide ou expiré",
-            description: "Veuillez refaire une demande de réinitialisation.",
-            variant: "destructive"
-        });
-        return;
+      toast({
+        title: "Jeton invalide ou expiré",
+        description: "Veuillez refaire une demande de réinitialisation.",
+        variant: "destructive"
+      });
+      return;
     }
-    
+
     console.log("New customer password:", values.password);
-    // TODO: Implement actual customer password update logic
-    
+
     toast({
       title: "Mot de passe réinitialisé !",
       description: "Vous pouvez maintenant vous connecter avec votre nouveau mot de passe.",
     });
+
     router.push('/auth/login');
   }
 
@@ -60,30 +59,42 @@ function ResetPasswordForm() {
     <div className="container mx-auto px-4 py-12 flex items-center justify-center min-h-[70vh]">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-            <div className="mx-auto bg-primary/10 p-3 rounded-full w-fit mb-2">
-                <Lock className="h-8 w-8 text-primary" />
-            </div>
-            <CardTitle className="font-headline text-3xl">Réinitialiser votre mot de passe</CardTitle>
-            <CardDescription>Saisissez votre nouveau mot de passe ci-dessous.</CardDescription>
+          <div className="mx-auto bg-primary/10 p-3 rounded-full w-fit mb-2">
+            <Lock className="h-8 w-8 text-primary" />
+          </div>
+          <CardTitle className="font-headline text-3xl">Réinitialiser votre mot de passe</CardTitle>
+          <CardDescription>Saisissez votre nouveau mot de passe ci-dessous.</CardDescription>
         </CardHeader>
+
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+
               <FormField control={form.control} name="password" render={({ field }) => (
                 <FormItem>
-                    <FormLabel>Nouveau mot de passe</FormLabel>
-                    <FormControl><Input type="password" placeholder="********" {...field} /></FormControl>
-                    <FormMessage />
+                  <FormLabel>Nouveau mot de passe</FormLabel>
+                  <FormControl>
+                    <Input type="password" placeholder="********" {...field} />
+                  </FormControl>
+                  <FormMessage />
                 </FormItem>
               )} />
+
               <FormField control={form.control} name="confirmPassword" render={({ field }) => (
                 <FormItem>
-                    <FormLabel>Confirmer le mot de passe</FormLabel>
-                    <FormControl><Input type="password" placeholder="********" {...field} /></FormControl>
-                    <FormMessage />
+                  <FormLabel>Confirmer le mot de passe</FormLabel>
+                  <FormControl>
+                    <Input type="password" placeholder="********" {...field} />
+                  </FormControl>
+                  <FormMessage />
                 </FormItem>
               )} />
-              <Button type="submit" size="lg" className="w-full">Enregistrer le mot de passe</Button>
+
+              {/* ⭐ Correction : suppression de size="lg" */}
+              <Button type="submit" className="w-full py-3 text-base">
+                Enregistrer le mot de passe
+              </Button>
+
             </form>
           </Form>
         </CardContent>
@@ -93,11 +104,9 @@ function ResetPasswordForm() {
 }
 
 export default function ResetPasswordPage() {
-    return (
-        <Suspense fallback={<div>Chargement...</div>}>
-            <ResetPasswordForm />
-        </Suspense>
-    );
+  return (
+    <Suspense fallback={<div>Chargement...</div>}>
+      <ResetPasswordForm />
+    </Suspense>
+  );
 }
-
-    
