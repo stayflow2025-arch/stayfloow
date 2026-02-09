@@ -16,7 +16,7 @@ export type PriceRecommendationOutput = {
    MOCK IA — version stable, build-safe, Cloudflare-safe
 -------------------------------------------------------------------*/
 export async function getPriceRecommendation(property: {
-  title: string;
+  name: string;        // <-- corrigé
   location: string;
   price: number;
   rooms?: number;
@@ -48,7 +48,7 @@ export async function getPriceRecommendation(property: {
             : 65,
         reasoning: [
           `Analyse basée sur la demande actuelle pour ${property.location}.`,
-          `Le bien "${property.title}" présente un score de demande de ${demandScore}/100.`,
+          `Le bien "${property.name}" présente un score de demande de ${demandScore}/100.`,
           `Le prix actuel (${property.price} DZD) a été ajusté selon les tendances du marché.`,
         ],
         marketFactors: [
