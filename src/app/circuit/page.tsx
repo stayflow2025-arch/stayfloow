@@ -20,7 +20,6 @@ import { Label } from '@/components/ui/label';
 import { useCurrency } from '@/context/currency-context';
 import { Checkbox } from '@/components/ui/checkbox';
 import { sendBookingConfirmationEmail } from '@/lib/mail';
-import { CrossSellCard } from '@/components/cross-sell-card';
 import { SiPaypal } from "@icons-pack/react-simple-icons";
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import type { DateRange } from "react-day-picker";
@@ -62,12 +61,17 @@ function CircuitBookingForm() {
         const id = searchParams.get('id');
         if (!id) return;
         
-        const approvedData = JSON.parse(localStorage.getItem('approvedCircuits') || '[]');
-        const storedPending = JSON.parse(localStorage.getItem('pendingSubmissions') || '[]');
-        const all = [...initialCircuits, ...approvedData, ...initialPendingCircuits, ...storedPending];
-        const found = all.find(p => String(p.id) === String(id));
-        
-        if (found) setCircuit(found);
+        try {
+            const approvedData = JSON.parse(localStorage.getItem('approvedCircuits') || '[]');
+            const storedPending = JSON.parse(localStorage.getItem('pendingSubmissions') || '[]');
+            const all = [...initialCircuits, ...approvedData, ...initialPendingCircuits, ...storedPending];
+            const found = all.find(p => String(p.id) === String(id));
+            
+            if (found) setCircuit(found);
+            else notFound();
+        } catch (e) {
+            console.error("Erreur de chargement local:", e);
+        }
     }, [searchParams]);
 
     const form = useForm<BookingFormValues>({
@@ -87,8 +91,8 @@ function CircuitBookingForm() {
     if (!circuit) return <div className="p-20 text-center">Chargement du circuit...</div>;
 
     const { paymentMethod } = form.watch();
-    const adults = form.getValues('adults');
-    const children = form.getValues('children');
+    const adults = form.watch('adults');
+    const children = form.watch('children');
     const totalPaying = (Number(adults) || 0) + (Number(children) || 0);
     const totalPrice = (Number(circuit.pricePerPerson) || 0) * totalPaying;
     const deposit = totalPrice * 0.20;
@@ -98,6 +102,7 @@ function CircuitBookingForm() {
         setReservationDetails({ number: resNum, email: values.email });
         
         try {
+            // CORRECTION CRITIQUE : Ajout des champs obligatoires hostEmail et hostPhone
             await sendBookingConfirmationEmail({
                 customerName: values.fullName,
                 customerEmail: values.email,
@@ -105,12 +110,17 @@ function CircuitBookingForm() {
                 itemName: circuit.title,
                 itemType: 'circuit',
                 hostName: circuit.guide?.name || "Guide Stayfloow",
+                hostEmail: circuit.guide?.email || "contact@stayfloow.com",
+                hostPhone: circuit.guide?.phone || "+212 000 000 000",
                 bookingDetails: { 
-                    startDate: dates?.from?.toISOString(), 
+                    startDate: dates?.from?.toISOString() || new Date().toISOString(), 
+                    endDate: dates?.to?.toISOString(),
                     participants: totalPaying 
                 }
             });
-        } catch (e) { console.error(e); }
+        } catch (e) { 
+            console.error("Erreur d'envoi d'email:", e); 
+        }
 
         setIsBookingConfirmed(true);
         toast({ title: "Réservation confirmée !" });
@@ -122,14 +132,14 @@ function CircuitBookingForm() {
                 <CheckCircle className="h-20 w-20 text-green-500 mx-auto mb-6" />
                 <h1 className="text-3xl font-bold mb-4">Réservation terminée !</h1>
                 <p className="text-muted-foreground mb-8">N° {reservationDetails.number}. Un e-mail a été envoyé à {reservationDetails.email}.</p>
-                <Link href="/"><Button>Retour à l'accueil</Button></Link>
+                <Link href="/"><Button type="button">Retour à l'accueil</Button></Link>
             </div>
         );
     }
 
     return (
         <div className="container mx-auto px-4 py-8 max-w-5xl">
-            <Button type="button" onClick={() => router.back()} className="mb-6">
+            <Button type="button" onClick={() => router.back()} className="mb-6 bg-slate-100 text-black hover:bg-slate-200">
                 <ArrowLeft className="mr-2 h-4 w-4" /> Retour
             </Button>
             
@@ -155,13 +165,14 @@ function CircuitBookingForm() {
                                         <Label>Dates</Label>
                                         <Popover open={isDatePopoverOpen} onOpenChange={setIsDatePopoverOpen}>
                                             <PopoverTrigger asChild>
-                                                {/* CORRECTION : On retire variant="outline" pour éviter l'erreur de type */}
-                                                <Button type="button" className="w-full justify-start font-normal border bg-transparent text-black hover:bg-slate-100">
+                                                <Button type="button" className="w-full justify-start font-normal border border-slate-200 bg-white text-black hover:bg-slate-50">
                                                     <CalendarIcon className="mr-2 h-4 w-4" />
                                                     {dates?.from ? (dates.to ? `${format(dates.from, "dd/MM/yy")} - ${format(dates.to, "dd/MM/yy")}` : format(dates.from, "dd/MM/yy")) : "Sélectionner les dates"}
                                                 </Button>
                                             </PopoverTrigger>
-                                            <PopoverContent className="w-auto p-0"><Calendar mode="range" selected={dates} onSelect={setDates} locale={fr} disabled={{ before: new Date() }} /></PopoverContent>
+                                            <PopoverContent className="w-auto p-0" align="start">
+                                                <Calendar mode="range" selected={dates} onSelect={setDates} locale={fr} disabled={{ before: new Date() }} />
+                                            </PopoverContent>
                                         </Popover>
                                     </div>
                                 </CardContent>
@@ -170,19 +181,23 @@ function CircuitBookingForm() {
                             <Card>
                                 <CardHeader><CardTitle>Paiement Acompte</CardTitle></CardHeader>
                                 <CardContent className="space-y-4">
-                                    <Alert className="bg-slate-50 border-slate-200"><Info className="h-4 w-4" /><AlertTitle>Acompte de 20%</AlertTitle><AlertDescription>Le solde est dû au guide sur place.</AlertDescription></Alert>
+                                    <Alert className="bg-blue-50 border-blue-200">
+                                        <Info className="h-4 w-4 text-blue-600" />
+                                        <AlertTitle>Acompte de 20%</AlertTitle>
+                                        <AlertDescription>Le solde restant sera à régler directement auprès du guide.</AlertDescription>
+                                    </Alert>
                                     
                                     <FormField control={form.control} name="paymentMethod" render={({ field }) => (
                                         <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="grid grid-cols-2 gap-4">
                                             <div>
                                                 <RadioGroupItem value="card" id="card" className="peer sr-only" />
-                                                <Label htmlFor="card" className="flex flex-col items-center p-4 border-2 rounded-xl cursor-pointer peer-data-[state=checked]:border-black">
+                                                <Label htmlFor="card" className="flex flex-col items-center p-4 border-2 rounded-xl cursor-pointer peer-data-[state=checked]:border-blue-600 peer-data-[state=checked]:bg-blue-50 hover:bg-slate-50">
                                                     <CreditCard className="mb-2" /> Carte
                                                 </Label>
                                             </div>
                                             <div>
                                                 <RadioGroupItem value="paypal" id="paypal" className="peer sr-only" />
-                                                <Label htmlFor="paypal" className="flex flex-col items-center p-4 border-2 rounded-xl cursor-pointer peer-data-[state=checked]:border-black">
+                                                <Label htmlFor="paypal" className="flex flex-col items-center p-4 border-2 rounded-xl cursor-pointer peer-data-[state=checked]:border-blue-600 peer-data-[state=checked]:bg-blue-50 hover:bg-slate-50">
                                                     <SiPaypal className="mb-2" /> PayPal
                                                 </Label>
                                             </div>
@@ -194,27 +209,31 @@ function CircuitBookingForm() {
                             <FormField control={form.control} name="agreeToTerms" render={({ field }) => (
                                 <FormItem className="flex items-start space-x-3 p-4 border rounded-lg">
                                     <FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl>
-                                    <Label className="text-sm cursor-pointer">J'accepte les conditions générales.</Label>
+                                    <Label className="text-sm cursor-pointer leading-none">J'accepte les conditions générales de vente et la politique de confidentialité.</Label>
                                     <FormMessage />
                                 </FormItem>
                             )}/>
 
-                            <Button type="submit" className="w-full h-14 text-lg">Payer {formatPrice(deposit)}</Button>
+                            <Button type="submit" className="w-full h-14 text-lg bg-blue-600 hover:bg-blue-700">Payer l'acompte : {formatPrice(deposit)}</Button>
                         </form>
                     </Form>
                 </div>
 
                 <div className="lg:col-span-1">
-                    <Card className="sticky top-24 shadow-lg">
+                    <Card className="sticky top-24 shadow-lg border-none bg-slate-50">
                         <div className="relative h-48 w-full">
-                            {circuit.images?.[0] && <Image src={circuit.images[0]} alt="" fill className="object-cover rounded-t-xl" />}
+                            {circuit.images?.[0] ? (
+                                <Image src={circuit.images[0]} alt={circuit.title} fill className="object-cover rounded-t-xl" />
+                            ) : (
+                                <div className="w-full h-full bg-slate-200 flex items-center justify-center rounded-t-xl">Image non disponible</div>
+                            )}
                         </div>
-                        <CardHeader><CardTitle>{circuit.title}</CardTitle></CardHeader>
+                        <CardHeader><CardTitle className="text-xl">{circuit.title}</CardTitle></CardHeader>
                         <CardContent className="space-y-4">
-                            <div className="flex justify-between text-sm"><span>Voyageurs</span><span className="font-bold">{totalPaying}</span></div>
+                            <div className="flex justify-between text-sm text-slate-600"><span>Nombre de voyageurs</span><span className="font-bold text-black">{totalPaying}</span></div>
                             <Separator />
-                            <div className="flex justify-between font-bold"><span>Total Circuit</span><span>{formatPrice(totalPrice)}</span></div>
-                            <div className="flex justify-between text-xl font-bold text-blue-600"><span>Acompte</span><span>{formatPrice(deposit)}</span></div>
+                            <div className="flex justify-between font-medium"><span>Prix total</span><span>{formatPrice(totalPrice)}</span></div>
+                            <div className="flex justify-between text-xl font-bold text-blue-600"><span>Acompte (20%)</span><span>{formatPrice(deposit)}</span></div>
                         </CardContent>
                     </Card>
                 </div>
@@ -225,7 +244,7 @@ function CircuitBookingForm() {
 
 export default function CircuitBookingPage() {
     return (
-        <Suspense fallback={<div className="p-20 text-center">Chargement...</div>}>
+        <Suspense fallback={<div className="p-20 text-center">Chargement de la page de réservation...</div>}>
             <CircuitBookingForm />
         </Suspense>
     );
