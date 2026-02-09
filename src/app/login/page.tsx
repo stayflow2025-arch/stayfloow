@@ -16,10 +16,12 @@ export default function LoginPage() {
 
   return (
     <div className="container mx-auto px-4 py-12 flex items-center justify-center min-h-[70vh]">
-      <h1 className="text-3xl font-bold">Connexion</h1>
-      <p className="text-muted-foreground mt-4">
-        Le formulaire sera ajouté ici.
-      </p>
+      <div className="text-center">
+        <h1 className="text-3xl font-bold">Connexion</h1>
+        <p className="text-muted-foreground mt-4">
+          Le formulaire sera ajouté ici.
+        </p>
+      </div>
     </div>
   );
 }
