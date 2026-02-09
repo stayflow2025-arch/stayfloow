@@ -1,4 +1,4 @@
-const { withCloudflare } = require("@cloudflare/next-on-pages/next");
+const { withCloudflare } = require("@cloudflare/next-on-pages");
 
 /** @type {import('next').NextConfig} */
 module.exports = withCloudflare({
