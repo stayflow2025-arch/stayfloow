@@ -10,7 +10,8 @@ import {
   Sheet,
   SheetContent,
   SheetTrigger,
-} from "@/components/ui/sheet";
+} from "./ui/sheet"; // ⭐ Chemin RELATIF pour Cloudflare
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,7 +19,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "./ui/dropdown-menu";
 
 import { useLanguage } from "@/context/language-context";
 
@@ -129,7 +130,6 @@ export function Header() {
                 </Button>
               </SheetTrigger>
 
-              {/* ⭐ Version compatible : pas de asChild, pas de children directs */}
               <SheetContent className="w-80 sm:w-96">
                 <div className="mt-6">
                   <nav className="flex flex-col gap-4 text-lg">
