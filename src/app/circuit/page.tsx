@@ -102,7 +102,6 @@ function CircuitBookingForm() {
         setReservationDetails({ number: resNum, email: values.email });
         
         try {
-            // CORRECTION CRITIQUE : Ajout des champs obligatoires hostEmail et hostPhone
             await sendBookingConfirmationEmail({
                 customerName: values.fullName,
                 customerEmail: values.email,
@@ -161,6 +160,7 @@ function CircuitBookingForm() {
                                             <FormItem><FormLabel>Téléphone</FormLabel><FormControl><Input type="tel" {...field} /></FormControl><FormMessage /></FormItem>
                                         )}/>
                                     </div>
+
                                     <div className="space-y-2">
                                         <Label>Dates</Label>
                                         <Popover open={isDatePopoverOpen} onOpenChange={setIsDatePopoverOpen}>
@@ -208,13 +208,19 @@ function CircuitBookingForm() {
 
                             <FormField control={form.control} name="agreeToTerms" render={({ field }) => (
                                 <FormItem className="flex items-start space-x-3 p-4 border rounded-lg">
-                                    <FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl>
-                                    <Label className="text-sm cursor-pointer leading-none">J'accepte les conditions générales de vente et la politique de confidentialité.</Label>
+                                    <FormControl>
+                                        <Checkbox checked={field.value} onChange={field.onChange} />
+                                    </FormControl>
+                                    <Label className="text-sm cursor-pointer leading-none">
+                                        J'accepte les conditions générales de vente et la politique de confidentialité.
+                                    </Label>
                                     <FormMessage />
                                 </FormItem>
                             )}/>
 
-                            <Button type="submit" className="w-full h-14 text-lg bg-blue-600 hover:bg-blue-700">Payer l'acompte : {formatPrice(deposit)}</Button>
+                            <Button type="submit" className="w-full h-14 text-lg bg-blue-600 hover:bg-blue-700">
+                                Payer l'acompte : {formatPrice(deposit)}
+                            </Button>
                         </form>
                     </Form>
                 </div>
@@ -230,10 +236,19 @@ function CircuitBookingForm() {
                         </div>
                         <CardHeader><CardTitle className="text-xl">{circuit.title}</CardTitle></CardHeader>
                         <CardContent className="space-y-4">
-                            <div className="flex justify-between text-sm text-slate-600"><span>Nombre de voyageurs</span><span className="font-bold text-black">{totalPaying}</span></div>
+                            <div className="flex justify-between text-sm text-slate-600">
+                                <span>Nombre de voyageurs</span>
+                                <span className="font-bold text-black">{totalPaying}</span>
+                            </div>
                             <Separator />
-                            <div className="flex justify-between font-medium"><span>Prix total</span><span>{formatPrice(totalPrice)}</span></div>
-                            <div className="flex justify-between text-xl font-bold text-blue-600"><span>Acompte (20%)</span><span>{formatPrice(deposit)}</span></div>
+                            <div className="flex justify-between font-medium">
+                                <span>Prix total</span>
+                                <span>{formatPrice(totalPrice)}</span>
+                            </div>
+                            <div className="flex justify-between text-xl font-bold text-blue-600">
+                                <span>Acompte (20%)</span>
+                                <span>{formatPrice(deposit)}</span>
+                            </div>
                         </CardContent>
                     </Card>
                 </div>
