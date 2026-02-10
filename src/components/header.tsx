@@ -129,19 +129,21 @@ export function Header() {
                 </Button>
               </SheetTrigger>
 
-              {/* ✅ AUCUN asChild ICI */}
-              <SheetContent className="w-80 sm:w-96">
-                <nav className="flex flex-col gap-4 mt-6 text-lg">
-                  {navLinks.map((link) => (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      onClick={() => setIsSheetOpen(false)}
-                    >
-                      {link.label}
-                    </Link>
-                  ))}
-                </nav>
+              {/* ⭐ Correction : SheetContent doit utiliser asChild */}
+              <SheetContent className="w-80 sm:w-96" asChild>
+                <div>
+                  <nav className="flex flex-col gap-4 mt-6 text-lg">
+                    {navLinks.map((link) => (
+                      <Link
+                        key={link.href}
+                        href={link.href}
+                        onClick={() => setIsSheetOpen(false)}
+                      >
+                        {link.label}
+                      </Link>
+                    ))}
+                  </nav>
+                </div>
               </SheetContent>
             </Sheet>
           </div>
