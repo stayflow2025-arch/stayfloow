@@ -129,10 +129,10 @@ export function Header() {
                 </Button>
               </SheetTrigger>
 
-              {/* ⭐ Correction : SheetContent doit utiliser asChild */}
-              <SheetContent className="w-80 sm:w-96" asChild>
-                <div>
-                  <nav className="flex flex-col gap-4 mt-6 text-lg">
+              {/* ⭐ Version compatible : pas de asChild, pas de children directs */}
+              <SheetContent className="w-80 sm:w-96">
+                <div className="mt-6">
+                  <nav className="flex flex-col gap-4 text-lg">
                     {navLinks.map((link) => (
                       <Link
                         key={link.href}
