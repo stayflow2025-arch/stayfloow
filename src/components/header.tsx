@@ -1,17 +1,16 @@
 "use client";
 
-console.log("DEBUG: Header loaded");
-
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Button } from "./ui/button";
 import { MountainSnow, Menu } from "lucide-react";
-import { useLanguage } from "@/context/language-context";
+
+import { Button } from "./ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import {
   Sheet,
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { useEffect, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,20 +19,19 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+
+import { useLanguage } from "@/context/language-context";
 
 export function Header() {
-  console.log("DEBUG: Rendering Header");
-
   const { t } = useLanguage();
 
   const [isClient, setIsClient] = useState(false);
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
+
   useEffect(() => {
     setIsClient(true);
   }, []);
-
-  const [isSheetOpen, setIsSheetOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
 
   const navLinks = [
     { href: "/search", label: t("accommodations") },
@@ -88,7 +86,7 @@ export function Header() {
                   </Button>
                 </DropdownMenuTrigger>
 
-                <DropdownMenuContent className="w-56" align="end" forceMount>
+                <DropdownMenuContent className="w-56" align="end">
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
                       <p className="text-sm font-medium leading-none">
@@ -134,4 +132,85 @@ export function Header() {
             <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
               <SheetTrigger asChild>
                 <Button className="h-10 w-10 flex items-center justify-center border rounded-md bg-transparent hover:bg-accent">
-                  <Menu className="h-6 w
+                  <Menu className="h-6 w-6" />
+                  <span className="sr-only">{t("open_menu")}</span>
+                </Button>
+              </SheetTrigger>
+
+              <SheetContent
+                className="
+                  w-80 sm:w-96
+                  data-[state=open]:animate-in
+                  data-[state=open]:slide-in-from-left
+                  data-[state=closed]:animate-out
+                  data-[state=closed]:slide-out-to-left
+                "
+              >
+                <div className="flex flex-col h-full">
+                  <div className="p-4 border-b">
+                    <Link
+                      href="/"
+                      className="flex items-center gap-2"
+                      onClick={() => setIsSheetOpen(false)}
+                    >
+                      <MountainSnow className="h-6 w-6 text-primary" />
+                      <span className="font-headline text-2xl font-bold tracking-tight">
+                        StayFloow
+                      </span>
+                    </Link>
+                  </div>
+
+                  <nav className="flex flex-col gap-4 p-4 text-lg font-medium">
+                    {isLoggedIn && (
+                      <Link
+                        href="/account/dashboard"
+                        onClick={() => setIsSheetOpen(false)}
+                      >
+                        Mon Compte
+                      </Link>
+                    )}
+
+                    {navLinks.map((link) => (
+                      <Link
+                        key={link.href}
+                        href={link.href}
+                        onClick={() => setIsSheetOpen(false)}
+                      >
+                        {link.label}
+                      </Link>
+                    ))}
+                  </nav>
+
+                  <div className="mt-auto p-4 border-t">
+                    {isLoggedIn ? (
+                      <Button
+                        className="w-full border bg-transparent hover:bg-accent"
+                        onClick={() => {
+                          setIsLoggedIn(false);
+                          setIsSheetOpen(false);
+                        }}
+                      >
+                        Se déconnecter
+                      </Button>
+                    ) : (
+                      <>
+                        <Link href="/login" onClick={() => setIsSheetOpen(false)}>
+                          <Button className="w-full border bg-transparent hover:bg-accent">
+                            {t("login")}
+                          </Button>
+                        </Link>
+                        <Link href="/signup" onClick={() => setIsSheetOpen(false)}>
+                          <Button className="w-full">{t("signup")}</Button>
+                        </Link>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </SheetContent>
+            </Sheet>
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+}
