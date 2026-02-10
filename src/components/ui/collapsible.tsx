@@ -1,12 +1,91 @@
+"use client";
 
-"use client"
+import * as React from "react";
+import { cn } from "@/lib/utils";
 
-import * as CollapsiblePrimitive from "@radix-ui/react-collapsible"
+type CollapsibleProps = {
+  open?: boolean;
+  defaultOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  className?: string;
+  children: React.ReactNode;
+};
 
-const Collapsible = CollapsiblePrimitive.Root
+const Collapsible = ({
+  open,
+  defaultOpen = false,
+  onOpenChange,
+  className,
+  children,
+}: CollapsibleProps) => {
+  const [internalOpen, setInternalOpen] = React.useState(defaultOpen);
 
-const CollapsibleTrigger = CollapsiblePrimitive.CollapsibleTrigger
+  const isOpen = open !== undefined ? open : internalOpen;
 
-const CollapsibleContent = CollapsiblePrimitive.CollapsibleContent
+  const toggle = () => {
+    const newState = !isOpen;
+    if (open === undefined) setInternalOpen(newState);
+    onOpenChange?.(newState);
+  };
 
-export { Collapsible, CollapsibleTrigger, CollapsibleContent }
+  return (
+    <div className={cn("w-full", className)}>
+      {React.Children.map(children, (child: any) => {
+        if (!child) return null;
+
+        if (child.type === CollapsibleTrigger) {
+          return React.cloneElement(child, { toggle, isOpen });
+        }
+
+        if (child.type === CollapsibleContent) {
+          return React.cloneElement(child, { isOpen });
+        }
+
+        return child;
+      })}
+    </div>
+  );
+};
+
+const CollapsibleTrigger = ({
+  children,
+  toggle,
+  isOpen,
+  className,
+}: {
+  children: React.ReactNode;
+  toggle?: () => void;
+  isOpen?: boolean;
+  className?: string;
+}) => (
+  <button
+    type="button"
+    onClick={toggle}
+    className={cn("cursor-pointer", className)}
+    aria-expanded={isOpen}
+  >
+    {children}
+  </button>
+);
+
+const CollapsibleContent = ({
+  children,
+  isOpen,
+  className,
+}: {
+  children: React.ReactNode;
+  isOpen?: boolean;
+  className?: string;
+}) => (
+  <div
+    className={cn(
+      "transition-all overflow-hidden",
+      isOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0",
+      className
+    )}
+  >
+    {children}
+  </div>
+);
+
+export { Collapsible, CollapsibleTrigger, CollapsibleContent };
