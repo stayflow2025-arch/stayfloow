@@ -75,12 +75,9 @@ export function Header() {
             {isLoggedIn ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button className="relative h-10 w-10 rounded-full bg-transparent hover:bg-accent flex items-center justify-center">
+                  <Button className="relative h-10 w-10 rounded-full bg-transparent hover:bg-accent">
                     <Avatar>
-                      <AvatarImage
-                        src="https://picsum.photos/seed/user-fatiha/100/100"
-                        alt="Fatiha Voyageuse"
-                      />
+                      <AvatarImage src="https://picsum.photos/seed/user-fatiha/100/100" />
                       <AvatarFallback>FV</AvatarFallback>
                     </Avatar>
                   </Button>
@@ -89,25 +86,19 @@ export function Header() {
                 <DropdownMenuContent className="w-56" align="end">
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium leading-none">
-                        Fatiha Voyageuse
-                      </p>
-                      <p className="text-xs leading-none text-muted-foreground">
+                      <p className="text-sm font-medium">Fatiha Voyageuse</p>
+                      <p className="text-xs text-muted-foreground">
                         fatiha.voyage@email.com
                       </p>
                     </div>
                   </DropdownMenuLabel>
 
                   <DropdownMenuSeparator />
-
                   <DropdownMenuItem asChild>
                     <Link href="/account/dashboard">Mon Compte</Link>
                   </DropdownMenuItem>
-
                   <DropdownMenuItem>Mes Favoris</DropdownMenuItem>
-
                   <DropdownMenuSeparator />
-
                   <DropdownMenuItem onClick={() => setIsLoggedIn(false)}>
                     Se déconnecter
                   </DropdownMenuItem>
@@ -116,9 +107,7 @@ export function Header() {
             ) : (
               <>
                 <Link href="/login">
-                  <Button className="bg-transparent hover:bg-accent">
-                    {t("login")}
-                  </Button>
+                  <Button variant="ghost">{t("login")}</Button>
                 </Link>
                 <Link href="/signup">
                   <Button>{t("signup")}</Button>
@@ -131,83 +120,28 @@ export function Header() {
           <div className="md:hidden">
             <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
               <SheetTrigger asChild>
-                <Button className="h-10 w-10 flex items-center justify-center border rounded-md bg-transparent hover:bg-accent">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-10 w-10"
+                >
                   <Menu className="h-6 w-6" />
-                  <span className="sr-only">{t("open_menu")}</span>
                 </Button>
               </SheetTrigger>
 
-              {/* ✅ CORRECTION ICI */}
-              <SheetContent
-                asChild={false}
-                className="
-                  w-80 sm:w-96
-                  data-[state=open]:animate-in
-                  data-[state=open]:slide-in-from-left
-                  data-[state=closed]:animate-out
-                  data-[state=closed]:slide-out-to-left
-                "
-              >
-                <div className="flex flex-col h-full">
-                  <div className="p-4 border-b">
+              {/* ✅ AUCUN asChild ICI */}
+              <SheetContent className="w-80 sm:w-96">
+                <nav className="flex flex-col gap-4 mt-6 text-lg">
+                  {navLinks.map((link) => (
                     <Link
-                      href="/"
-                      className="flex items-center gap-2"
+                      key={link.href}
+                      href={link.href}
                       onClick={() => setIsSheetOpen(false)}
                     >
-                      <MountainSnow className="h-6 w-6 text-primary" />
-                      <span className="font-headline text-2xl font-bold tracking-tight">
-                        StayFloow
-                      </span>
+                      {link.label}
                     </Link>
-                  </div>
-
-                  <nav className="flex flex-col gap-4 p-4 text-lg font-medium">
-                    {isLoggedIn && (
-                      <Link
-                        href="/account/dashboard"
-                        onClick={() => setIsSheetOpen(false)}
-                      >
-                        Mon Compte
-                      </Link>
-                    )}
-
-                    {navLinks.map((link) => (
-                      <Link
-                        key={link.href}
-                        href={link.href}
-                        onClick={() => setIsSheetOpen(false)}
-                      >
-                        {link.label}
-                      </Link>
-                    ))}
-                  </nav>
-
-                  <div className="mt-auto p-4 border-t">
-                    {isLoggedIn ? (
-                      <Button
-                        className="w-full border bg-transparent hover:bg-accent"
-                        onClick={() => {
-                          setIsLoggedIn(false);
-                          setIsSheetOpen(false);
-                        }}
-                      >
-                        Se déconnecter
-                      </Button>
-                    ) : (
-                      <>
-                        <Link href="/login" onClick={() => setIsSheetOpen(false)}>
-                          <Button className="w-full border bg-transparent hover:bg-accent">
-                            {t("login")}
-                          </Button>
-                        </Link>
-                        <Link href="/signup" onClick={() => setIsSheetOpen(false)}>
-                          <Button className="w-full">{t("signup")}</Button>
-                        </Link>
-                      </>
-                    )}
-                  </div>
-                </div>
+                  ))}
+                </nav>
               </SheetContent>
             </Sheet>
           </div>
