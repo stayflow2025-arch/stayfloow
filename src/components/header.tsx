@@ -137,7 +137,9 @@ export function Header() {
                 </Button>
               </SheetTrigger>
 
+              {/* ✅ CORRECTION ICI */}
               <SheetContent
+                asChild={false}
                 className="
                   w-80 sm:w-96
                   data-[state=open]:animate-in
