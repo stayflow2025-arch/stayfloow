@@ -2,17 +2,34 @@
 // EMAIL TEMPLATES
 // ===============================
 
-export type EmailTemplateData = Record<string, any>;
+export type EmailTemplateData = Record<string, any>
 
 export type EmailTemplateResult = {
-  subject: string;
-  body: string;
-};
+  subject: string
+  body: string
+}
+
+// ------------------------------
+// TEMPLATE TYPES
+// ------------------------------
+export type EmailTemplateName =
+  | "bookingConfirmation"
+  | "partnerWelcome"
+  | "favoriteReminder"
+  | "newSubmissionAdminNotification"
+  | "passwordReset"
+  | "newBookingNotification"
+
+export type EmailTemplate = (
+  data: EmailTemplateData
+) => Promise<EmailTemplateResult>
 
 // ------------------------------
 // 1. BOOKING CONFIRMATION
 // ------------------------------
-export async function bookingConfirmationEmail(data: EmailTemplateData): Promise<EmailTemplateResult> {
+export async function bookingConfirmationEmail(
+  data: EmailTemplateData
+): Promise<EmailTemplateResult> {
   return {
     subject: `Confirmation de réservation #${data.reservationNumber}`,
     body: `
@@ -21,13 +38,15 @@ export async function bookingConfirmationEmail(data: EmailTemplateData): Promise
       ${data.detailsHtml || ""}
       <p>L'équipe StayFloow</p>
     `,
-  };
+  }
 }
 
 // ------------------------------
 // 2. PARTNER WELCOME
 // ------------------------------
-export async function partnerWelcomeEmail(data: EmailTemplateData): Promise<EmailTemplateResult> {
+export async function partnerWelcomeEmail(
+  data: EmailTemplateData
+): Promise<EmailTemplateResult> {
   return {
     subject: `Bienvenue sur StayFloow !`,
     body: `
@@ -37,13 +56,15 @@ export async function partnerWelcomeEmail(data: EmailTemplateData): Promise<Emai
       <p><a href="${data.setupLink}">Configurer mon compte</a></p>
       <p>L'équipe StayFloow</p>
     `,
-  };
+  }
 }
 
 // ------------------------------
 // 3. FAVORITE REMINDER
 // ------------------------------
-export async function favoriteReminderEmail(data: EmailTemplateData): Promise<EmailTemplateResult> {
+export async function favoriteReminderEmail(
+  data: EmailTemplateData
+): Promise<EmailTemplateResult> {
   return {
     subject: `Vous avez aimé ${data.propertyName}`,
     body: `
@@ -53,13 +74,15 @@ export async function favoriteReminderEmail(data: EmailTemplateData): Promise<Em
       <p><a href="${data.propertyUrl}">Voir la propriété</a></p>
       <p>L'équipe StayFloow</p>
     `,
-  };
+  }
 }
 
 // ------------------------------
 // 4. ADMIN NOTIFICATION
 // ------------------------------
-export async function newSubmissionAdminNotificationEmail(data: EmailTemplateData): Promise<EmailTemplateResult> {
+export async function newSubmissionAdminNotificationEmail(
+  data: EmailTemplateData
+): Promise<EmailTemplateResult> {
   return {
     subject: `Nouvelle soumission : ${data.submissionName}`,
     body: `
@@ -70,13 +93,15 @@ export async function newSubmissionAdminNotificationEmail(data: EmailTemplateDat
       <p>Téléphone : ${data.partnerPhone}</p>
       <p><a href="${data.adminUrl}">Voir dans l'admin</a></p>
     `,
-  };
+  }
 }
 
 // ------------------------------
 // 5. PASSWORD RESET
 // ------------------------------
-export async function passwordResetEmail(data: EmailTemplateData): Promise<EmailTemplateResult> {
+export async function passwordResetEmail(
+  data: EmailTemplateData
+): Promise<EmailTemplateResult> {
   return {
     subject: `Réinitialisation de votre mot de passe`,
     body: `
@@ -84,13 +109,15 @@ export async function passwordResetEmail(data: EmailTemplateData): Promise<Email
       <p><a href="${data.resetLink}">Réinitialiser mon mot de passe</a></p>
       <p>L'équipe StayFloow</p>
     `,
-  };
+  }
 }
 
 // ------------------------------
-// 6. NEW BOOKING NOTIFICATION (MANQUANT)
+// 6. NEW BOOKING NOTIFICATION
 // ------------------------------
-export async function newBookingNotificationEmail(data: EmailTemplateData): Promise<EmailTemplateResult> {
+export async function newBookingNotificationEmail(
+  data: EmailTemplateData
+): Promise<EmailTemplateResult> {
   return {
     subject: `Nouvelle réservation #${data.reservationNumber} pour ${data.itemName}`,
     body: `
@@ -102,30 +129,31 @@ export async function newBookingNotificationEmail(data: EmailTemplateData): Prom
       <p>Téléphone : ${data.customerPhone}</p>
       <p>L'équipe StayFloow</p>
     `,
-  };
+  }
+}
+
+// ------------------------------
+// DEFAULT TEMPLATES (MANQUAIT)
+// ------------------------------
+export const defaultTemplates: Record<EmailTemplateName, EmailTemplate> = {
+  bookingConfirmation: bookingConfirmationEmail,
+  partnerWelcome: partnerWelcomeEmail,
+  favoriteReminder: favoriteReminderEmail,
+  newSubmissionAdminNotification: newSubmissionAdminNotificationEmail,
+  passwordReset: passwordResetEmail,
+  newBookingNotification: newBookingNotificationEmail,
 }
 
 // ------------------------------
 // ROUTEUR
 // ------------------------------
 export async function getEmailTemplate(
-  templateName: string,
+  templateName: EmailTemplateName,
   data: EmailTemplateData
 ): Promise<EmailTemplateResult> {
-  switch (templateName) {
-    case "bookingConfirmation":
-      return bookingConfirmationEmail(data);
-    case "partnerWelcome":
-      return partnerWelcomeEmail(data);
-    case "favoriteReminder":
-      return favoriteReminderEmail(data);
-    case "newSubmissionAdminNotification":
-      return newSubmissionAdminNotificationEmail(data);
-    case "passwordReset":
-      return passwordResetEmail(data);
-    case "newBookingNotification": // ← LE TEMPLATE QUI MANQUAIT
-      return newBookingNotificationEmail(data);
-    default:
-      throw new Error(`Unknown email template: ${templateName}`);
+  const template = defaultTemplates[templateName]
+  if (!template) {
+    throw new Error(`Unknown email template: ${templateName}`)
   }
+  return template(data)
 }
