@@ -12,7 +12,7 @@ const toastVariants = cva(
       variant: {
         default: "border bg-background text-foreground",
         destructive:
-          "destructive group border-destructive bg-destructive text-destructive-foreground",
+          "border-destructive bg-destructive text-destructive-foreground",
       },
     },
     defaultVariants: {
@@ -21,10 +21,10 @@ const toastVariants = cva(
   }
 )
 
-export type ToastActionElement = React.ReactElement<typeof ToastAction>
+export type ToastActionElement = React.ReactNode
 
 export interface ToastProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, "title">,
+  extends React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof toastVariants> {
   open?: boolean
   onOpenChange?: (open: boolean) => void
@@ -34,23 +34,45 @@ export interface ToastProps
 }
 
 export const Toast = React.forwardRef<HTMLDivElement, ToastProps>(
-  ({ className, variant, title, description, action, ...props }, ref) => (
-    <div
-      ref={ref}
-      className={cn(toastVariants({ variant }), className)}
-      {...props}
-    >
-      <div className="grid gap-1">
-        {title && <ToastTitle>{title}</ToastTitle>}
-        {description && (
-          <ToastDescription>{description}</ToastDescription>
-        )}
+  (
+    {
+      className,
+      variant,
+      title,
+      description,
+      action,
+      open,
+      onOpenChange,
+      ...props
+    },
+    ref
+  ) => {
+    return (
+      <div
+        ref={ref}
+        data-state={open ? "open" : "closed"}
+        className={cn(toastVariants({ variant }), className)}
+        {...props}
+      >
+        <div className="grid gap-1">
+          {title && <ToastTitle>{title}</ToastTitle>}
+          {description && (
+            <ToastDescription>{description}</ToastDescription>
+          )}
+        </div>
+
+        {action}
+
+        <ToastClose
+          onClick={() => {
+            onOpenChange?.(false)
+          }}
+        />
       </div>
-      {action}
-      <ToastClose />
-    </div>
-  )
+    )
+  }
 )
+
 Toast.displayName = "Toast"
 
 export const ToastTitle = React.forwardRef<
