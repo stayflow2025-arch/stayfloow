@@ -1,12 +1,3 @@
-import type { OpenNextConfig } from "@opennextjs/cloudflare";
+import { defineCloudflareConfig } from "@opennextjs/cloudflare";
 
-const config: OpenNextConfig = {
-  output: "standalone",
-  cloudflare: {
-    worker: {
-      name: "stayfloow",
-    },
-  },
-};
-
-export default config;
+export default defineCloudflareConfig({});
