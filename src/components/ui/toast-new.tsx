@@ -24,7 +24,7 @@ const toastVariants = cva(
 export type ToastActionElement = React.ReactElement<typeof ToastAction>
 
 export interface ToastProps
-  extends React.ComponentPropsWithoutRef<"div">,
+  extends React.HTMLAttributes<HTMLDivElement>, // ← FIX ICI
     VariantProps<typeof toastVariants> {
   open?: boolean
   onOpenChange?: (open: boolean) => void
