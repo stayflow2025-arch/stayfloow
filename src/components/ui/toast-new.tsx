@@ -23,8 +23,13 @@ const toastVariants = cva(
 
 export type ToastActionElement = React.ReactNode
 
+type DivProps = Omit<
+  React.HTMLAttributes<HTMLDivElement>,
+  "title"
+>
+
 export interface ToastProps
-  extends React.HTMLAttributes<HTMLDivElement>,
+  extends DivProps,
     VariantProps<typeof toastVariants> {
   open?: boolean
   onOpenChange?: (open: boolean) => void
