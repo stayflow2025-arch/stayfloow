@@ -1,152 +1,151 @@
 "use client"
 
 import * as React from "react"
-import { cva, type VariantProps } from "class-variance-authority"
-import { X } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { ToastProps } from "@/components/ui/toast-new"
 
-const toastVariants = cva(
-  "group pointer-events-auto relative flex w-full items-center justify-between space-x-4 overflow-hidden rounded-md border p-4 pr-6 shadow-lg transition-all data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-80 data-[state=open]:fade-in-80 data-[state=closed]:slide-out-to-right-full data-[state=open]:slide-in-from-right-full",
-  {
-    variants: {
-      variant: {
-        default: "border bg-background text-foreground",
-        destructive:
-          "border-destructive bg-destructive text-destructive-foreground",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
-    },
-  }
-)
+const TOAST_LIMIT = 1
+const TOAST_REMOVE_DELAY = 1000000
 
-export type ToastActionElement = React.ReactNode
-
-type DivProps = Omit<
-  React.HTMLAttributes<HTMLDivElement>,
-  "title"
->
-
-export interface ToastProps
-  extends DivProps,
-    VariantProps<typeof toastVariants> {
+type ToasterToast = {
+  id: string
   open?: boolean
   onOpenChange?: (open: boolean) => void
   title?: React.ReactNode
   description?: React.ReactNode
   action?: React.ReactNode
+  variant?: "default" | "destructive"
+  className?: string
 }
 
-export const Toast = React.forwardRef<HTMLDivElement, ToastProps>(
-  (
-    {
-      className,
-      variant,
-      title,
-      description,
-      action,
-      open,
-      onOpenChange,
-      ...props
-    },
-    ref
-  ) => {
-    return (
-      <div
-        ref={ref}
-        data-state={open ? "open" : "closed"}
-        className={cn(toastVariants({ variant }), className)}
-        {...props}
-      >
-        <div className="grid gap-1">
-          {title && <ToastTitle>{title}</ToastTitle>}
-          {description && (
-            <ToastDescription>{description}</ToastDescription>
-          )}
-        </div>
+type State = {
+  toasts: ToasterToast[]
+}
 
-        {action}
+const actionTypes = {
+  ADD_TOAST: "ADD_TOAST",
+  UPDATE_TOAST: "UPDATE_TOAST",
+  DISMISS_TOAST: "DISMISS_TOAST",
+  REMOVE_TOAST: "REMOVE_TOAST",
+} as const
 
-        <ToastClose
-          onClick={() => {
-            onOpenChange?.(false)
-          }}
-        />
-      </div>
-    )
+let count = 0
+function genId() {
+  count = (count + 1) % Number.MAX_SAFE_INTEGER
+  return count.toString()
+}
+
+type Action =
+  | { type: typeof actionTypes.ADD_TOAST; toast: ToasterToast }
+  | { type: typeof actionTypes.UPDATE_TOAST; toast: Partial<ToasterToast> & { id: string } }
+  | { type: typeof actionTypes.DISMISS_TOAST; toastId?: string }
+  | { type: typeof actionTypes.REMOVE_TOAST; toastId?: string }
+
+const toastTimeouts = new Map<string, ReturnType<typeof setTimeout>>()
+
+const addToRemoveQueue = (toastId: string) => {
+  if (toastTimeouts.has(toastId)) return
+
+  const timeout = setTimeout(() => {
+    toastTimeouts.delete(toastId)
+    dispatch({ type: actionTypes.REMOVE_TOAST, toastId })
+  }, TOAST_REMOVE_DELAY)
+
+  toastTimeouts.set(toastId, timeout)
+}
+
+export const reducer = (state: State, action: Action): State => {
+  switch (action.type) {
+    case actionTypes.ADD_TOAST:
+      return {
+        ...state,
+        toasts: [action.toast, ...state.toasts].slice(0, TOAST_LIMIT),
+      }
+
+    case actionTypes.UPDATE_TOAST:
+      return {
+        ...state,
+        toasts: state.toasts.map((t) =>
+          t.id === action.toast.id ? { ...t, ...action.toast } : t
+        ),
+      }
+
+    case actionTypes.DISMISS_TOAST: {
+      const { toastId } = action
+
+      if (toastId) {
+        addToRemoveQueue(toastId)
+      } else {
+        state.toasts.forEach((toast) => addToRemoveQueue(toast.id))
+      }
+
+      return {
+        ...state,
+        toasts: state.toasts.map((t) =>
+          t.id === toastId || toastId === undefined
+            ? { ...t, open: false }
+            : t
+        ),
+      }
+    }
+
+    case actionTypes.REMOVE_TOAST:
+      return {
+        ...state,
+        toasts: state.toasts.filter((t) => t.id !== action.toastId),
+      }
   }
-)
+}
 
-Toast.displayName = "Toast"
+const listeners: Array<(state: State) => void> = []
 
-export const ToastTitle = React.forwardRef<
-  HTMLHeadingElement,
-  React.HTMLAttributes<HTMLHeadingElement>
->(({ className, ...props }, ref) => (
-  <h3
-    ref={ref}
-    className={cn("text-sm font-semibold", className)}
-    {...props}
-  />
-))
-ToastTitle.displayName = "ToastTitle"
+let memoryState: State = { toasts: [] }
 
-export const ToastDescription = React.forwardRef<
-  HTMLParagraphElement,
-  React.HTMLAttributes<HTMLParagraphElement>
->(({ className, ...props }, ref) => (
-  <p
-    ref={ref}
-    className={cn("text-sm opacity-90", className)}
-    {...props}
-  />
-))
-ToastDescription.displayName = "ToastDescription"
+function dispatch(action: Action) {
+  memoryState = reducer(memoryState, action)
+  listeners.forEach((listener) => listener(memoryState))
+}
 
-export const ToastClose = React.forwardRef<
-  HTMLButtonElement,
-  React.ButtonHTMLAttributes<HTMLButtonElement>
->(({ className, ...props }, ref) => (
-  <button
-    ref={ref}
-    className={cn(
-      "absolute right-2 top-2 rounded-md p-1 text-foreground/50 opacity-0 transition-opacity hover:text-foreground focus:opacity-100 group-hover:opacity-100",
-      className
-    )}
-    {...props}
-  >
-    <X className="h-4 w-4" />
-  </button>
-))
-ToastClose.displayName = "ToastClose"
+export function toast(props: Omit<ToastProps, "id">) {
+  const id = genId()
 
-export const ToastAction = React.forwardRef<
-  HTMLButtonElement,
-  React.ButtonHTMLAttributes<HTMLButtonElement>
->(({ className, ...props }, ref) => (
-  <button
-    ref={ref}
-    className={cn(
-      "inline-flex h-8 items-center justify-center rounded-md border bg-transparent px-3 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
-      className
-    )}
-    {...props}
-  />
-))
-ToastAction.displayName = "ToastAction"
+  dispatch({
+    type: actionTypes.ADD_TOAST,
+    toast: {
+      id,
+      open: true,
+      onOpenChange: (open) => {
+        if (!open) dispatch({ type: actionTypes.DISMISS_TOAST, toastId: id })
+      },
+      ...props,
+    },
+  })
 
-export const ToastViewport = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn(
-      "fixed top-0 right-0 z-[100] flex max-h-screen w-full flex-col-reverse p-4 sm:max-w-sm",
-      className
-    )}
-    {...props}
-  />
-))
-ToastViewport.displayName = "ToastViewport"
+  return {
+    id,
+    dismiss: () => dispatch({ type: actionTypes.DISMISS_TOAST, toastId: id }),
+    update: (props: Partial<ToasterToast>) =>
+      dispatch({
+        type: actionTypes.UPDATE_TOAST,
+        toast: { id, ...props },
+      }),
+  }
+}
+
+export function useToast() {
+  const [state, setState] = React.useState<State>(memoryState)
+
+  React.useEffect(() => {
+    listeners.push(setState)
+    return () => {
+      const index = listeners.indexOf(setState)
+      if (index > -1) listeners.splice(index, 1)
+    }
+  }, [])
+
+  return {
+    ...state,
+    toast,
+    dismiss: (toastId?: string) =>
+      dispatch({ type: actionTypes.DISMISS_TOAST, toastId }),
+  }
+}
