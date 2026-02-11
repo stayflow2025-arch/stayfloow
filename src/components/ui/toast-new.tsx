@@ -24,21 +24,27 @@ const toastVariants = cva(
 export type ToastActionElement = React.ReactElement<typeof ToastAction>
 
 export interface ToastProps
-  extends React.HTMLAttributes<HTMLDivElement>,
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, "title">,
     VariantProps<typeof toastVariants> {
   open?: boolean
   onOpenChange?: (open: boolean) => void
   title?: React.ReactNode
   description?: React.ReactNode
-  action?: ToastActionElement
+  action?: React.ReactNode
 }
 
 export const Toast = React.forwardRef<HTMLDivElement, ToastProps>(
   ({ className, variant, title, description, action, ...props }, ref) => (
-    <div ref={ref} className={cn(toastVariants({ variant }), className)} {...props}>
+    <div
+      ref={ref}
+      className={cn(toastVariants({ variant }), className)}
+      {...props}
+    >
       <div className="grid gap-1">
         {title && <ToastTitle>{title}</ToastTitle>}
-        {description && <ToastDescription>{description}</ToastDescription>}
+        {description && (
+          <ToastDescription>{description}</ToastDescription>
+        )}
       </div>
       {action}
       <ToastClose />
@@ -51,7 +57,11 @@ export const ToastTitle = React.forwardRef<
   HTMLHeadingElement,
   React.HTMLAttributes<HTMLHeadingElement>
 >(({ className, ...props }, ref) => (
-  <h3 ref={ref} className={cn("text-sm font-semibold", className)} {...props} />
+  <h3
+    ref={ref}
+    className={cn("text-sm font-semibold", className)}
+    {...props}
+  />
 ))
 ToastTitle.displayName = "ToastTitle"
 
@@ -59,7 +69,11 @@ export const ToastDescription = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, ...props }, ref) => (
-  <p ref={ref} className={cn("text-sm opacity-90", className)} {...props} />
+  <p
+    ref={ref}
+    className={cn("text-sm opacity-90", className)}
+    {...props}
+  />
 ))
 ToastDescription.displayName = "ToastDescription"
 
