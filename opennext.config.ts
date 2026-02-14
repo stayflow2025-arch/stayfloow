@@ -1,7 +1,7 @@
 import type { OpenNextConfig } from "@opennextjs/cloudflare";
 
 const config: OpenNextConfig = {
-  default: {},
+  output: "standalone",
 };
 
 export default config;
