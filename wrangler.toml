@@ -1,11 +1,5 @@
 name = "stayfloow"
-main = ".open-next/worker.js"
-compatibility_date = "2024-12-01"
-compatibility_flags = ["nodejs_compat"]
+compatibility_date = "2024-01-01"
 
-[assets]
-directory = ".open-next/assets"
-binding = "ASSETS"
+pages_build_output_dir = ".vercel/output/static"
 
-[env.preview]
-name = "stayfloow-preview"
