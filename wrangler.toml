@@ -1,4 +1,4 @@
-name = "stayfloow-work"
+name = "stayfloow"
 main = ".open-next/worker.js"
 compatibility_date = "2024-12-01"
 compatibility_flags = ["nodejs_compat"]
@@ -8,4 +8,4 @@ directory = ".open-next/assets"
 binding = "ASSETS"
 
 [env.preview]
-name = "stayfloow-work-preview"
+name = "stayfloow-preview"
