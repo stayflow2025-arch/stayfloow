@@ -1,32 +1,34 @@
-"use client"
-
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import {
   Controller,
-  FormProvider,
   useFormContext,
+  type ControllerRenderProps,
+  type ControllerFieldState,
+  type UseFormStateReturn,
 } from "react-hook-form"
 
 import { cn } from "@/lib/utils"
 
-const Form = FormProvider
+const Form = ({ ...props }) => {
+  return <form {...props} />
+}
 
-const FormField = ({ ...props }) => {
-  return <Controller {...props} />
+const FormField = ({ control, name, render }) => {
+  return (
+    <Controller
+      control={control}
+      name={name}
+      render={render}
+    />
+  )
 }
 
 const FormItem = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
-  return (
-    <div
-      ref={ref}
-      className={cn("space-y-2", className)}
-      {...props}
-    />
-  )
+  return <div ref={ref} className={cn("space-y-2", className)} {...props} />
 })
 FormItem.displayName = "FormItem"
 
@@ -37,10 +39,7 @@ const FormLabel = React.forwardRef<
   return (
     <label
       ref={ref}
-      className={cn(
-        "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70",
-        className
-      )}
+      className={cn("text-sm font-medium", className)}
       {...props}
     />
   )
@@ -48,8 +47,8 @@ const FormLabel = React.forwardRef<
 FormLabel.displayName = "FormLabel"
 
 const FormControl = React.forwardRef<
-  HTMLElement,
-  React.HTMLAttributes<HTMLElement>
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
 >(({ ...props }, ref) => {
   return <Slot ref={ref} {...props} />
 })
@@ -71,10 +70,10 @@ FormDescription.displayName = "FormDescription"
 
 const FormMessage = React.forwardRef<
   HTMLParagraphElement,
-  React.HTMLAttributes<HTMLParagraphElement> & { name?: string }
+  React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, children, ...props }, ref) => {
   const { formState } = useFormContext()
-  const error = props.name ? formState.errors?.[props.name] : null
+  const error = formState.errors?.[props.name]
 
   return (
     <p
@@ -90,10 +89,10 @@ FormMessage.displayName = "FormMessage"
 
 export {
   Form,
-  FormField,
   FormItem,
   FormLabel,
   FormControl,
   FormDescription,
   FormMessage,
+  FormField,
 }
