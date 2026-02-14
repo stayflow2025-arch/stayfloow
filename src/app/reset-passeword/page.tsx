@@ -76,7 +76,7 @@ function ResetPasswordForm() {
                   <FormControl>
                     <Input type="password" placeholder="********" {...field} />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage name={field.name} />
                 </FormItem>
               )} />
 
@@ -86,7 +86,7 @@ function ResetPasswordForm() {
                   <FormControl>
                     <Input type="password" placeholder="********" {...field} />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage name={field.name} />
                 </FormItem>
               )} />
 

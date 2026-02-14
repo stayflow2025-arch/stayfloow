@@ -59,7 +59,7 @@ export default function SignupPage() {
                   <FormControl>
                     <Input placeholder="John Doe" {...field} />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage name={field.name} />
                 </FormItem>
               )} />
 
@@ -69,7 +69,7 @@ export default function SignupPage() {
                   <FormControl>
                     <Input type="email" placeholder="votre@email.com" {...field} />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage name={field.name} />
                 </FormItem>
               )} />
 
@@ -79,7 +79,7 @@ export default function SignupPage() {
                   <FormControl>
                     <Input type="password" placeholder="********" {...field} />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage name={field.name} />
                 </FormItem>
               )} />
 
