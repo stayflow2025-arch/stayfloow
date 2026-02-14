@@ -3,9 +3,6 @@ import { Slot } from "@radix-ui/react-slot"
 import {
   Controller,
   useFormContext,
-  type ControllerRenderProps,
-  type ControllerFieldState,
-  type UseFormStateReturn,
 } from "react-hook-form"
 
 import { cn } from "@/lib/utils"
@@ -68,24 +65,16 @@ const FormDescription = React.forwardRef<
 })
 FormDescription.displayName = "FormDescription"
 
-const FormMessage = React.forwardRef<
-  HTMLParagraphElement,
-  React.HTMLAttributes<HTMLParagraphElement>
->(({ className, children, ...props }, ref) => {
+const FormMessage = ({ name, className, children }) => {
   const { formState } = useFormContext()
-  const error = formState.errors?.[props.name]
+  const error = formState.errors?.[name]
 
   return (
-    <p
-      ref={ref}
-      className={cn("text-sm font-medium text-destructive", className)}
-      {...props}
-    >
+    <p className={cn("text-sm font-medium text-destructive", className)}>
       {error ? String(error.message) : children}
     </p>
   )
-})
-FormMessage.displayName = "FormMessage"
+}
 
 export {
   Form,
