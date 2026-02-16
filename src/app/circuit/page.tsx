@@ -122,7 +122,7 @@ function CircuitBookingForm() {
         }
 
         setIsBookingConfirmed(true);
-        toast({ title: "Réservation confirmée !" });
+        toast("Réservation confirmée !");
     };
 
     if (isBookingConfirmed) {
@@ -150,14 +150,14 @@ function CircuitBookingForm() {
                                 <CardHeader><CardTitle>Informations Voyageurs</CardTitle></CardHeader>
                                 <CardContent className="space-y-4">
                                     <FormField control={form.control} name="fullName" render={({ field }) => (
-                                        <FormItem><FormLabel>Nom complet</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage name={field.name} /></FormItem>
+                                        <FormItem><FormLabel>Nom complet</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                                     )}/>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <FormField control={form.control} name="email" render={({ field }) => (
-                                            <FormItem><FormLabel>Email</FormLabel><FormControl><Input type="email" {...field} /></FormControl><FormMessage name={field.name} /></FormItem>
+                                            <FormItem><FormLabel>Email</FormLabel><FormControl><Input type="email" {...field} /></FormControl><FormMessage /></FormItem>
                                         )}/>
                                         <FormField control={form.control} name="phone" render={({ field }) => (
-                                            <FormItem><FormLabel>Téléphone</FormLabel><FormControl><Input type="tel" {...field} /></FormControl><FormMessage name={field.name} /></FormItem>
+                                            <FormItem><FormLabel>Téléphone</FormLabel><FormControl><Input type="tel" {...field} /></FormControl><FormMessage /></FormItem>
                                         )}/>
                                     </div>
 
@@ -214,7 +214,7 @@ function CircuitBookingForm() {
                                     <Label className="text-sm cursor-pointer leading-none">
                                         J'accepte les conditions générales de vente et la politique de confidentialité.
                                     </Label>
-                                    <FormMessage name={field.name} />
+                                    <FormMessage />
                                 </FormItem>
                             )}/>
 
@@ -264,3 +264,7 @@ export default function CircuitBookingPage() {
         </Suspense>
     );
 }
+
+
+
+

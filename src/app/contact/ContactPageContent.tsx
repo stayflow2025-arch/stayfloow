@@ -45,7 +45,7 @@ export default function ContactPageContent({ t, toast }: ContactPageContentProps
                 <FormControl>
                   <Input placeholder={t("contact.namePlaceholder")} {...field} />
                 </FormControl>
-                <FormMessage name={field.name} />
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -60,7 +60,7 @@ export default function ContactPageContent({ t, toast }: ContactPageContentProps
                 <FormControl>
                   <Input type="email" placeholder={t("contact.emailPlaceholder")} {...field} />
                 </FormControl>
-                <FormMessage name={field.name} />
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -80,7 +80,7 @@ export default function ContactPageContent({ t, toast }: ContactPageContentProps
                     {...field}
                   />
                 </FormControl>
-                <FormMessage name={field.name} />
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -93,3 +93,7 @@ export default function ContactPageContent({ t, toast }: ContactPageContentProps
     </div>
   );
 }
+
+
+
+

@@ -54,14 +54,14 @@ export default function SeoOptimizerPage() {
     try {
       setTimeout(() => {
         setResult({
-          title: "S√©jour de Luxe | " + entityName,
-          description: "D√©couvrez nos h√©bergements d'exception. R√©servez votre s√©jour d√®s maintenant.",
+          title: "SÈjour de Luxe | " + entityName,
+          description: "DÈcouvrez nos hÈbergements d'exception. RÈservez votre sÈjour dËs maintenant.",
           keywords: ["location", "vacances", "luxe", entityName]
         });
         setIsPending(false);
       }, 1500);
     } catch (err) {
-      setError("Une erreur est survenue lors de la g√©n√©ration.");
+      setError("Une erreur est survenue lors de la gÈnÈration.");
       setIsPending(false);
     }
   };
@@ -71,7 +71,7 @@ export default function SeoOptimizerPage() {
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-bold tracking-tight">Optimiseur SEO</h1>
         <p className="text-muted-foreground">
-          G√©n√©rez des m√©ta-donn√©es optimis√©es pour vos pages gr√¢ce √† l'IA.
+          GÈnÈrez des mÈta-donnÈes optimisÈes pour vos pages gr‚ce ‡ l'IA.
         </p>
       </div>
 
@@ -91,7 +91,7 @@ export default function SeoOptimizerPage() {
           <form onSubmit={handleSubmit}>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="entity">Nom de l'√©tablissement / Page</Label>
+                <Label htmlFor="entity">Nom de l'Ètablissement / Page</Label>
                 <Input 
                   id="entity" 
                   placeholder="ex: Villa Belle Vue" 
@@ -105,18 +105,18 @@ export default function SeoOptimizerPage() {
                 <Label>Type de page</Label>
                 <Select value={pageType} onValueChange={setPageType}>
                   <SelectTrigger>
-                    <SelectValue placeholder="S√©lectionnez un type" />
+                    <SelectValue placeholder="SÈlectionnez un type" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="homepage">Page d'accueil</SelectItem>
-                    <SelectItem value="property">Fiche propri√©t√©</SelectItem>
+                    <SelectItem value="property">Fiche propriÈtÈ</SelectItem>
                     <SelectItem value="blog">Article de blog</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               <div className="space-y-2">
-                <Label>Cible g√©ographique</Label>
+                <Label>Cible gÈographique</Label>
                 <Select value={countryFocus} onValueChange={setCountryFocus}>
                   <SelectTrigger>
                     <SelectValue />
@@ -140,7 +140,7 @@ export default function SeoOptimizerPage() {
                 ) : (
                   <>
                     <Search className="mr-2 h-4 w-4" />
-                    G√©n√©rer les suggestions
+                    GÈnÈrer les suggestions
                   </>
                 )}
               </Button>
@@ -148,7 +148,7 @@ export default function SeoOptimizerPage() {
           </form>
         </Card>
 
-        {/* R√©sultats */}
+        {/* RÈsultats */}
         <div className="space-y-6">
           {error && (
             <Alert variant="destructive">
@@ -170,7 +170,7 @@ export default function SeoOptimizerPage() {
               <CardContent className="space-y-4">
                 <div className="p-3 bg-white border rounded-md shadow-sm">
                   <p className="text-xs font-bold text-blue-600 truncate mb-1">
-                    Aper√ßu Google
+                    AperÁu Google
                   </p>
                   <h3 className="text-blue-800 text-lg hover:underline cursor-pointer font-medium mb-1">
                     {result.title}
@@ -185,7 +185,7 @@ export default function SeoOptimizerPage() {
 
                 <div className="space-y-2">
                   <Label className="flex items-center gap-1">
-                    <Key className="h-3 w-3" /> Mots-cl√©s sugg√©r√©s
+                    <Key className="h-3 w-3" /> Mots-clÈs suggÈrÈs
                   </Label>
 
                   <div className="flex flex-wrap gap-2">
@@ -207,3 +207,7 @@ export default function SeoOptimizerPage() {
     </div>
   );
 }
+
+
+
+

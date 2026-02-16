@@ -10,3 +10,7 @@ export default function ContactClient() {
 
   return <ContactPageContent t={t} toast={toast} />;
 }
+
+
+
+

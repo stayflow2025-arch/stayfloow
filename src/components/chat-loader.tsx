@@ -26,3 +26,7 @@ const CustomerSupportChat = dynamic(
 export function ChatLoader() {
   return <CustomerSupportChat />;
 }
+
+
+
+

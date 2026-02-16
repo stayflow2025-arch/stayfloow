@@ -31,7 +31,7 @@ const getRatingColor = (rating: number) => {
 
 export function PropertyCard({ property, isGenius = false, viewMode = "grid" }: PropertyCardProps) {
   const { formatPrice } = useCurrency();
-  const { toast } = useToast();
+  const { toast } = useToast() as any;
   const [isFavorited, setIsFavorited] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const discountedPrice = property.price * 0.9;
@@ -284,3 +284,7 @@ export function PropertyCard({ property, isGenius = false, viewMode = "grid" }: 
     </Card>
   );
 }
+
+
+
+

@@ -61,7 +61,7 @@ export default function LoginPage() {
                     {...field}
                   />
                 </FormControl>
-                <FormMessage name={field.name} />
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -80,7 +80,7 @@ export default function LoginPage() {
                     {...field}
                   />
                 </FormControl>
-                <FormMessage name={field.name} />
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -95,3 +95,7 @@ export default function LoginPage() {
     </div>
   );
 }
+
+
+
+

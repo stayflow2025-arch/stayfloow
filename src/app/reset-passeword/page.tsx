@@ -13,7 +13,7 @@ import { Suspense } from 'react';
 import { Lock } from 'lucide-react';
 
 const resetPasswordSchema = z.object({
-  password: z.string().min(8, "Le mot de passe doit contenir au moins 8 caract√®res."),
+  password: z.string().min(8, "Le mot de passe doit contenir au moins 8 caractËres."),
   confirmPassword: z.string()
 }).refine(data => data.password === data.confirmPassword, {
   message: "Les mots de passe ne correspondent pas.",
@@ -37,18 +37,15 @@ function ResetPasswordForm() {
 
   function onSubmit(values: z.infer<typeof resetPasswordSchema>) {
     if (!token) {
-      toast({
-        title: "Jeton invalide ou expir√©",
-        description: "Veuillez refaire une demande de r√©initialisation.",
-        variant: "destructive"
+      toast.error("Jeton invalide ou expirÈ", {
+        description: "Veuillez refaire une demande de rÈinitialisation.",
       });
       return;
     }
 
     console.log("New customer password:", values.password);
 
-    toast({
-      title: "Mot de passe r√©initialis√© !",
+    toast("Mot de passe rÈinitialisÈ !", {
       description: "Vous pouvez maintenant vous connecter avec votre nouveau mot de passe.",
     });
 
@@ -62,7 +59,7 @@ function ResetPasswordForm() {
           <div className="mx-auto bg-primary/10 p-3 rounded-full w-fit mb-2">
             <Lock className="h-8 w-8 text-primary" />
           </div>
-          <CardTitle className="font-headline text-3xl">R√©initialiser votre mot de passe</CardTitle>
+          <CardTitle className="font-headline text-3xl">RÈinitialiser votre mot de passe</CardTitle>
           <CardDescription>Saisissez votre nouveau mot de passe ci-dessous.</CardDescription>
         </CardHeader>
 
@@ -76,7 +73,7 @@ function ResetPasswordForm() {
                   <FormControl>
                     <Input type="password" placeholder="********" {...field} />
                   </FormControl>
-                  <FormMessage name={field.name} />
+                  <FormMessage />
                 </FormItem>
               )} />
 
@@ -86,11 +83,10 @@ function ResetPasswordForm() {
                   <FormControl>
                     <Input type="password" placeholder="********" {...field} />
                   </FormControl>
-                  <FormMessage name={field.name} />
+                  <FormMessage />
                 </FormItem>
               )} />
 
-              {/* ‚≠ê Correction : suppression de size="lg" */}
               <Button type="submit" className="w-full py-3 text-base">
                 Enregistrer le mot de passe
               </Button>

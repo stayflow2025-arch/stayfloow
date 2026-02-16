@@ -37,9 +37,8 @@ export default function ForgotPasswordPage() {
       console.error("Password reset email failed to send:", e);
     }
 
-    toast({
-      title: "Email envoy√© !",
-      description: "Si un compte existe pour cet email, vous recevrez un lien pour r√©initialiser votre mot de passe.",
+    toast("Email envoyÈ !", {
+      description: "Si un compte existe pour cet email, vous recevrez un lien pour rÈinitialiser votre mot de passe.",
     });
 
     setIsSending(false);
@@ -53,8 +52,8 @@ export default function ForgotPasswordPage() {
           <div className="mx-auto bg-primary/10 p-3 rounded-full w-fit mb-2">
             <KeyRound className="h-8 w-8 text-primary" />
           </div>
-          <CardTitle className="font-headline text-3xl">Mot de passe oubli√©</CardTitle>
-          <CardDescription>Saisissez votre email pour recevoir un lien de r√©initialisation.</CardDescription>
+          <CardTitle className="font-headline text-3xl">Mot de passe oubliÈ</CardTitle>
+          <CardDescription>Saisissez votre email pour recevoir un lien de rÈinitialisation.</CardDescription>
         </CardHeader>
 
         <CardContent>
@@ -67,11 +66,10 @@ export default function ForgotPasswordPage() {
                   <FormControl>
                     <Input type="email" placeholder="votre@email.com" {...field} />
                   </FormControl>
-                  <FormMessage name={field.name} />
+                  <FormMessage />
                 </FormItem>
               )} />
 
-              {/* ‚≠ê Correction finale : aucun size, aucun variant */}
               <Button 
                 type="submit"
                 className="w-full h-11 px-8 flex items-center justify-center"
@@ -91,7 +89,7 @@ export default function ForgotPasswordPage() {
           </Form>
 
           <p className="text-center text-sm text-muted-foreground mt-6">
-            Retour √† la{" "}
+            Retour ‡ la{" "}
             <Link href="/auth/login" className="font-semibold text-primary hover:underline">
               page de connexion
             </Link>

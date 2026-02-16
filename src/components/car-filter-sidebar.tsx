@@ -39,7 +39,7 @@ export function CarFilterSidebar({ resultCount }: { resultCount: number }) {
 
       <CardContent className="p-0 max-h-[calc(100vh-12rem)] overflow-y-auto">
         {/* ✔️ Accordion corrigé : plus de type / defaultValue */}
-        <Accordion className="w-full">
+        <Accordion type="single" collapsible className="w-full">
           
           {/* Budget */}
           <AccordionItem value="budget">
@@ -141,3 +141,7 @@ export function CarFilterSidebar({ resultCount }: { resultCount: number }) {
     </Card>
   );
 }
+
+
+
+

@@ -129,3 +129,7 @@ export function PriceRecommender({ property }: { property: Property }) {
     </Card>
   );
 }
+
+
+
+

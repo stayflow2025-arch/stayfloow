@@ -2,15 +2,16 @@
 
 import { builder, BuilderComponent } from "@builder.io/react";
 
-// On initialise Builder.io
+// Initialisation Builder.io
 builder.init(process.env.NEXT_PUBLIC_BUILDER_API_KEY!);
 
 export default async function CatchAllPage(props: any) {
-  const params = props?.params || {};
-  const page = Array.isArray(params.page) ? params.page : [];
+  // Next.js 15 : params doit être awaited
+  const params = await props.params;
+  const page = Array.isArray(params?.page) ? params.page : [];
   const urlPath = "/" + page.join("/");
 
-  // On récupère le contenu Builder.io correspondant à l’URL
+  // Récupération du contenu Builder.io
   const content = await builder
     .get("page", {
       userAttributes: {

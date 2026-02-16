@@ -168,3 +168,7 @@ export function PropertiesMap({ properties }: { properties?: Property[] }) {
     </Card>
   );
 }
+
+
+
+

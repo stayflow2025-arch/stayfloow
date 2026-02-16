@@ -69,7 +69,7 @@ export default function RegisterPage() {
                     {...field}
                   />
                 </FormControl>
-                <FormMessage name={field.name} />
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -88,7 +88,7 @@ export default function RegisterPage() {
                     {...field}
                   />
                 </FormControl>
-                <FormMessage name={field.name} />
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -110,3 +110,7 @@ export default function RegisterPage() {
     </div>
   );
 }
+
+
+
+
