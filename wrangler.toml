@@ -5,3 +5,12 @@ pages_build_output_dir = ".open-next/assets"
 [functions]
 directory = "functions"
 
+
+[functions]
+directory = "functions"
+
+[[redirects]]
+from = "/*"
+to = "/index.html"
+status = 200
+force = true
