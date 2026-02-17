@@ -1,12 +1,6 @@
 name = "stayfloow"
-compatibility_date = "2025-02-01"
-pages_build_output_dir = ".open-next/assets"
+compatibility_date = "2026-02-16"
+compatibility_flags = ["nodejs_compat"]
 
-[functions]
-directory = "functions"
-
-[[redirects]]
-from = "/*"
-to = "/index.html"
-status = 200
-force = true
+main = ".open-next/worker.js"
+assets = { directory = ".open-next/assets", binding = "ASSETS" }
