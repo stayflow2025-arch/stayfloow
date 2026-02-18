@@ -1,5 +1,7 @@
-import { redirect } from 'next/navigation';
+"use client";
+
+import { BuilderComponent } from '@builder.io/react';
 
 export default function Home() {
-  redirect('/accueil'); // ← Change ici si tu préfères /admin ou une autre page qui marche
+  return <BuilderComponent model="page" content={null} />;
 }
