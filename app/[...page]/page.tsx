@@ -2,30 +2,32 @@
 
 import { builder, BuilderComponent } from "@builder.io/react";
 
-// Init Builder seulement côté serveur (pas de ! pour éviter crash si undefined)
+// Init Builder (safe si clé absente)
 builder.init(process.env.NEXT_PUBLIC_BUILDER_API_KEY || '');
 
-export default async function CatchAllPage({ params }: { params: { page: string[] } }) {
+export default async function CatchAllPage({ params }: { params: Promise<{ page: string[] }> }) {
   try {
-    const page = params?.page || [];
+    // Await params (obligatoire Next.js 15 pour pages dynamiques)
+    const resolvedParams = await params;
+    const page = resolvedParams?.page || [];
     const urlPath = "/" + page.join("/");
 
-    console.log("Fetching Builder.io for path:", urlPath);
+    console.log("[Builder.io] Fetching for path:", urlPath);
 
     const content = await builder
       .get("page", {
         userAttributes: { urlPath },
-        options: { cachebust: true }, // Force fresh fetch pour debug
+        options: { cachebust: true },
       })
       .toPromise();
 
     if (!content?.data) {
-      console.log("No Builder.io content for:", urlPath);
+      console.log("[Builder.io] No content for:", urlPath);
       return (
-        <div style={{ padding: 40, color: "red" }}>
+        <div style={{ padding: 40, color: "red", textAlign: "center" }}>
           <h1>Page non trouvée</h1>
-          <p>Aucun contenu Builder.io pour le slug : {urlPath}</p>
-          <p>Vérifie que tu as une page publiée dans Builder.io avec ce slug.</p>
+          <p>Aucun contenu dans Builder.io pour le slug : <strong>{urlPath}</strong></p>
+          <p>Crée une page dans Builder.io avec ce slug et publie-la.</p>
         </div>
       );
     }
@@ -36,12 +38,17 @@ export default async function CatchAllPage({ params }: { params: { page: string[
       </div>
     );
   } catch (error: any) {
-    console.error("Builder.io error on Workers:", error);
+    console.error("[Builder.io] Runtime error:", error);
     return (
-      <div style={{ padding: 40, color: "red" }}>
-        <h1>Erreur chargement page dynamique</h1>
+      <div style={{ padding: 40, color: "red", textAlign: "center" }}>
+        <h1>Erreur chargement page</h1>
         <p>{error.message || "Erreur inconnue"}</p>
-        <p>Vérifie ta clé NEXT_PUBLIC_BUILDER_API_KEY dans .env et dans le Worker (Variables & Secrets)</p>
+        <p>Vérifie :</p>
+        <ul style={{ textAlign: "left" }}>
+          <li>Ta clé NEXT_PUBLIC_BUILDER_API_KEY dans .env et dans Workers Variables</li>
+          <li>Le model "page" existe dans Builder.io</li>
+          <li>Le slug existe et est publié</li>
+        </ul>
         <p>Ray ID: {process.env.CF_RAY || "inconnu"}</p>
       </div>
     );
