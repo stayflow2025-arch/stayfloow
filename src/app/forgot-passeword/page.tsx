@@ -37,8 +37,8 @@ export default function ForgotPasswordPage() {
       console.error("Password reset email failed to send:", e);
     }
 
-    toast("Email envoyé !", {
-      description: "Si un compte existe pour cet email, vous recevrez un lien pour réinitialiser votre mot de passe.",
+    toast("Email envoyÃ© !", {
+      description: "Si un compte existe pour cet email, vous recevrez un lien pour rÃ©initialiser votre mot de passe.",
     });
 
     setIsSending(false);
@@ -52,8 +52,8 @@ export default function ForgotPasswordPage() {
           <div className="mx-auto bg-primary/10 p-3 rounded-full w-fit mb-2">
             <KeyRound className="h-8 w-8 text-primary" />
           </div>
-          <CardTitle className="font-headline text-3xl">Mot de passe oublié</CardTitle>
-          <CardDescription>Saisissez votre email pour recevoir un lien de réinitialisation.</CardDescription>
+          <CardTitle className="font-headline text-3xl">Mot de passe oubliÃ©</CardTitle>
+          <CardDescription>Saisissez votre email pour recevoir un lien de rÃ©initialisation.</CardDescription>
         </CardHeader>
 
         <CardContent>
@@ -89,7 +89,7 @@ export default function ForgotPasswordPage() {
           </Form>
 
           <p className="text-center text-sm text-muted-foreground mt-6">
-            Retour à la{" "}
+            Retour Ã  la{" "}
             <Link href="/auth/login" className="font-semibold text-primary hover:underline">
               page de connexion
             </Link>

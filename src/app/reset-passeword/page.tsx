@@ -13,7 +13,7 @@ import { Suspense } from 'react';
 import { Lock } from 'lucide-react';
 
 const resetPasswordSchema = z.object({
-  password: z.string().min(8, "Le mot de passe doit contenir au moins 8 caractères."),
+  password: z.string().min(8, "Le mot de passe doit contenir au moins 8 caractÃ¨res."),
   confirmPassword: z.string()
 }).refine(data => data.password === data.confirmPassword, {
   message: "Les mots de passe ne correspondent pas.",
@@ -37,15 +37,15 @@ function ResetPasswordForm() {
 
   function onSubmit(values: z.infer<typeof resetPasswordSchema>) {
     if (!token) {
-      toast.error("Jeton invalide ou expiré", {
-        description: "Veuillez refaire une demande de réinitialisation.",
+      toast.error("Jeton invalide ou expirÃ©", {
+        description: "Veuillez refaire une demande de rÃ©initialisation.",
       });
       return;
     }
 
     console.log("New customer password:", values.password);
 
-    toast("Mot de passe réinitialisé !", {
+    toast("Mot de passe rÃ©initialisÃ© !", {
       description: "Vous pouvez maintenant vous connecter avec votre nouveau mot de passe.",
     });
 
@@ -59,7 +59,7 @@ function ResetPasswordForm() {
           <div className="mx-auto bg-primary/10 p-3 rounded-full w-fit mb-2">
             <Lock className="h-8 w-8 text-primary" />
           </div>
-          <CardTitle className="font-headline text-3xl">Réinitialiser votre mot de passe</CardTitle>
+          <CardTitle className="font-headline text-3xl">RÃ©initialiser votre mot de passe</CardTitle>
           <CardDescription>Saisissez votre nouveau mot de passe ci-dessous.</CardDescription>
         </CardHeader>
 

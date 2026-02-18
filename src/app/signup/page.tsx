@@ -14,7 +14,7 @@ import Link from 'next/link';
 const signupSchema = z.object({
   fullName: z.string().min(3, "Le nom complet est requis."),
   email: z.string().email("L'adresse email est invalide."),
-  password: z.string().min(8, "Le mot de passe doit contenir au moins 8 caractËres."),
+  password: z.string().min(8, "Le mot de passe doit contenir au moins 8 caract√®res."),
 });
 
 export default function SignupPage() {
@@ -33,7 +33,7 @@ export default function SignupPage() {
   function onSubmit(values: z.infer<typeof signupSchema>) {
     console.log(values);
 
-    toast("Compte crÈÈ !", {
+    toast("Compte cr√©√© !", {
       description: "Bienvenue sur StayFloow ! Vous pouvez maintenant vous connecter.",
     });
 
@@ -44,8 +44,8 @@ export default function SignupPage() {
     <div className="container mx-auto px-4 py-12 flex items-center justify-center min-h-[70vh]">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle className="font-headline text-3xl">CrÈer un compte</CardTitle>
-          <CardDescription>Rejoignez notre communautÈ de voyageurs.</CardDescription>
+          <CardTitle className="font-headline text-3xl">Cr√©er un compte</CardTitle>
+          <CardDescription>Rejoignez notre communaut√© de voyageurs.</CardDescription>
         </CardHeader>
 
         <CardContent>
@@ -90,7 +90,7 @@ export default function SignupPage() {
           </Form>
 
           <p className="text-center text-sm text-muted-foreground mt-6">
-            DÈj‡ un compte ?{" "}
+            D√©j√† un compte ?{" "}
             <Link href="/login" className="font-semibold text-primary hover:underline">
               Connectez-vous
             </Link>
