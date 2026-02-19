@@ -1,7 +1,8 @@
+// app/page.tsx
 "use client";
 
 import BuilderContent from "../components/BuilderContent";
 
 export default function Home() {
-  return <BuilderContent />;
+  return <BuilderContent model="page" content={null} />;
 }
