@@ -2,7 +2,7 @@
 "use client";
 
 import { builder } from "@builder.io/react";
-import BuilderContent from "@/components/BuilderContent";
+import BuilderContent from "../components/BuilderContent"; // ← chemin relatif corrigé
 
 builder.init(process.env.NEXT_PUBLIC_BUILDER_API_KEY || "");
 
