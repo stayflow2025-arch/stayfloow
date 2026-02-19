@@ -1,8 +1,7 @@
-// app/page.tsx
 "use client";
 
-import BuilderContent from "../components/BuilderContent"; // ← chemin relatif depuis app/page.tsx
+import BuilderContent from "../components/BuilderContent";
 
 export default function Home() {
-  return <BuilderContent model="page" />;
+  return <BuilderContent />;
 }

@@ -1,17 +1,16 @@
-// components/BuilderContent.tsx
 "use client";
 
-import { BuilderComponent } from "@builder.io/react";
+import dynamic from 'next/dynamic';
 
-interface BuilderContentProps {
-  model: string;
-  content?: any;
-}
+const DynamicBuilder = dynamic(
+  () => import('@builder.io/react').then(mod => mod.BuilderComponent),
+  { ssr: false } // ← C'EST ÇA QUI ÉVITE LE CRASH SERVEUR
+);
 
-export default function BuilderContent({ model, content }: BuilderContentProps) {
+export default function BuilderContent({ model = "page", content }) {
   return (
     <div style={{ padding: 0, margin: 0 }}>
-      <BuilderComponent model={model} content={content} />
+      <DynamicBuilder model={model} content={content} />
     </div>
   );
 }
