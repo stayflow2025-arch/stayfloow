@@ -1,3 +1,4 @@
+// app/[...page]/page.tsx
 "use client";
 
 import { builder } from "@builder.io/react";
@@ -29,7 +30,7 @@ export default async function CatchAllPage({ params }) {
       );
     }
 
-    return <BuilderContent content={content.data} />;
+    return <BuilderContent model="page" content={content.data} />; // ← model ajouté ici
   } catch (e) {
     console.error(e);
     return <div style={{ padding: 40, color: "red" }}>Erreur : {e.message}</div>;
